@@ -1,0 +1,6 @@
+docs/*
+test/obj/*
+test/bin/*
+test/conan/*
+
+!**/.gitkeep
