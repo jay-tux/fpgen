@@ -7,10 +7,8 @@ INSTALL_DIR=/usr/include/fpgen
 INCL_PATH=$(abspath ./inc)
 DOC_DIR=$(abspath ./docs/)
 
-JOB_COUNT=4
-
 CC=g++
-CXXARGS=-I$(abspath ./inc)
+CXXARGS=-I$(abspath ./inc) -g -c -std=c++20 -MMD
 LDARGS=
 
 all:
@@ -33,10 +31,9 @@ all:
 	@echo "  -> INSTALL_DIR (for install and uninstall): sets the installation directory"
 	@echo "  -> INCL_PATH (for install, docs and test): the path to the directory with the headers, if you run make from another directory"
 	@echo "  -> DOC_DIR (for docs): the path to the build directory for the documentation"
-	@echo "  -> JOB_COUNT (for test): the amount of threads to start"
 	@echo " Current/default arguments: "
 	@echo "  CC=$(CC) CXXARGS=$(CXXARGS) LDARGS=$(LDARGS) EXTRA_CXX=$(EXTRA_CXX) EXTRA_LD=$(EXTRA_LD)"
-	@echo "  BUILD_DIR=$(BUILD_DIR) BIN_DIR=$(BIN_DIR) TEST_DIR=$(TEST_DIR) INSTALL_DIR=$(INSTALL_DIR) INCL_PATH=$(INCL_PATH) DOC_DIR=$(DOC_DIR) JOB_COUNT=$(JOB_COUNT)"
+	@echo "  BUILD_DIR=$(BUILD_DIR) BIN_DIR=$(BIN_DIR) TEST_DIR=$(TEST_DIR) INSTALL_DIR=$(INSTALL_DIR) INCL_PATH=$(INCL_PATH) DOC_DIR=$(DOC_DIR)"
 
 install:
 	[ ! -d $(INSTALL_DIR) ] && mkdir -p $(INSTALL_DIR)
@@ -50,10 +47,10 @@ docs:
 	OUTDIR=$(DOC_DIR) INDIR=$(INCL_PATH) doxygen doxyfile.mk
 
 test:
-	make CC="$(CC)" OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)" CXXARGS="$(CXXARGS) $(EXTRA_CXX) -I$(INCL_PATH)" LDARGS="$(LDARGS) $(EXTRA_LD)" -C $(TEST_DIR)/.. -j $(JOB_COUNT)
+	make CC="$(CC)" OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)" CXXARGS="$(CXXARGS) $(EXTRA_CXX) -I$(INCL_PATH)" LDARGS="$(LDARGS) $(EXTRA_LD)" -C $(TEST_DIR)/..
 
 clean:
-	rm -rf $(DOC_DIR)/* $(BUILD_DIR)/* $(BIN_DIR)/*
-
+	rm -rf $(DOC_DIR)/*
+	cd $(TEST_DIR)/.. && make clean OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)"
 
 .PHONY: install uninstall test clean
