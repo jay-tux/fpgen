@@ -4,3 +4,5 @@ test/bin/*
 test/conan/*
 
 !**/.gitkeep
+
+compile_flags.txt
