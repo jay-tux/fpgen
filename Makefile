@@ -36,15 +36,15 @@ all:
 	@echo "  BUILD_DIR=$(BUILD_DIR) BIN_DIR=$(BIN_DIR) TEST_DIR=$(TEST_DIR) INSTALL_DIR=$(INSTALL_DIR) INCL_PATH=$(INCL_PATH) DOC_DIR=$(DOC_DIR)"
 
 install:
-	[ ! -d $(INSTALL_DIR) ] && mkdir -p $(INSTALL_DIR)
+	([ ! -d $(INSTALL_DIR) ] && mkdir -p $(INSTALL_DIR)) || true
 	cp $(INCL_PATH)/*.hpp $(INSTALL_DIR)
 
 uninstall:
-	[ ! -d $(INSTALL_DIR) ] && rm -rf $(INSTALL_DIR)
+	[ -d $(INSTALL_DIR) ] && rm -rf $(INSTALL_DIR)
 
 docs:
-	[ ! -d $(DOC_DIR) ] && mkdir -p $(DOC_DIR)
-	OUTDIR=$(DOC_DIR) INDIR=$(INCL_PATH) doxygen doxyfile.mk
+	@([ ! -d $(DOC_DIR) ] && mkdir -p $(DOC_DIR)) || true
+	OUTDIR=$(DOC_DIR) INDIR=$(INCL_PATH) doxygen Doxyfile.mk
 
 test:
 	make CC="$(CC)" OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)" CXXARGS="$(CXXARGS) $(EXTRA_CXX) -I$(INCL_PATH)" LDARGS="$(LDARGS) $(EXTRA_LD)" -C $(TEST_DIR)/..
@@ -53,4 +53,4 @@ clean:
 	rm -rf $(DOC_DIR)/*
 	cd $(TEST_DIR)/.. && make clean OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)"
 
-.PHONY: install uninstall test clean
+.PHONY: install uninstall test clean docs
