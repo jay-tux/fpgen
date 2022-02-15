@@ -8,7 +8,7 @@ INCL_PATH=$(abspath ./inc)
 DOC_DIR=$(abspath ./docs/)
 
 CC=g++
-CXXARGS=-I$(abspath ./inc) -g -c -std=c++20 -MMD
+CXXARGS=-I$(abspath ./inc) -g -c -std=c++2a -MMD
 LDARGS=
 
 all:
