@@ -14,7 +14,7 @@ dirs:
 
 $(BIND)/generator: $(OBJD)/generator/test_generator.o
 	$(CC) $< $(LDXTRA) $(LDARGS) -o $@
-	$(BIND)/generator
+	$(BIND)/generator --gtest_output="xml:$(BIND)/"
 
 $(OBJD)/%.o: $(SRCD)/%.cpp Makefile
 	$(CC) $(CXXARGS) $(CXXXTRA) $< -o $@
