@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: update
-      run: sudo apt install g++11 libstdc++11-dev
+      run: sudo apt install gcc-11 libstdc++-11-dev
     - name: Install Conan
       id: conan
       uses: turtlebrowser/get-conan@main
