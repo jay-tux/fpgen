@@ -250,6 +250,33 @@ public:
    *  \param[in] p The promise to use.
    */
   generator(promise_type &p) : _h{handle_type::from_promise(p)} {}
+
+  /**
+   *  \brief Copy-constructing generators results in undefined behaviour.
+   */
+  generator(const generator &other) = delete;
+  /**
+   *  \brief Moves the data from the other generator into this one.
+   *  \param[in,out] other The other generator.
+   */
+  generator(generator &&other) = default;
+
+  /**
+   *  \brief Copy-assigning generators results in undefined behaviour.
+   */
+  generator &operator=(const generator &other) = delete;
+  /**
+   *  \brief Moves the data from the other generator into this one.
+   *  \param[in,out] other The other generator.
+   *  \returns A reference to this generator.
+   */
+  generator &operator=(generator &&other) = default;
+
+  /**
+   *  \brief Cleans up this generator's resources.
+   */
+  ~generator() = default;
+
   /**
    *  \brief Converts this generator its handle.
    *  \returns The handle for this generator.
