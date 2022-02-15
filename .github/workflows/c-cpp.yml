@@ -21,6 +21,6 @@ jobs:
       run: echo "${{ steps.conan.outputs.version }}"
     - uses: actions/checkout@v2
     - name: gcc version
-      run: g++ -v
+      run: g++11 -v
     - name: make test
-      run: make test
+      run: make test CC=g++11
