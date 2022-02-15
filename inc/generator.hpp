@@ -2,29 +2,22 @@
 #define _FPGEN_GENERATOR
 
 #ifdef __clang__
-#include <concepts>
 #include <experimental/coroutine>
 namespace std {
 using namespace experimental;
 }
 #else
-#include <concepts>
 #include <coroutine>
 #endif
 
+#include "__helpers.hpp"
 #include <exception>
 
 /**
  *  @brief The namespace containing all of fpgen's code.
  */
 namespace fpgen {
-#ifdef __clang__
-template <typename T>
-using enabler =
-    typename std::enable_if<std::is_copy_assignable<T>::value, bool>::type;
-
-template <typename T, enabler<T> = true> class generator {
-#else
+#if _FPGEN_USE_CONCEPTS
 /**
  *  \brief The main generator type.
  *
@@ -39,6 +32,12 @@ template <typename T, enabler<T> = true> class generator {
  * `std::copyable`, or on (older) CLang versions, `std::is_copy_assignable<T>`.
  */
 template <std::copyable T> class generator {
+#else
+template <typename T>
+using enabler =
+    typename std::enable_if<std::is_copy_assignable<T>::value, bool>::type;
+
+template <typename T, enabler<T> = true> class generator {
 #endif
 public:
   /**
