@@ -19,6 +19,6 @@ jobs:
       run: echo "${{ steps.conan.outputs.version }}"
     - uses: actions/checkout@v2
     - name: gcc version
-      rune: g++ -v
+      run: g++ -v
     - name: make test
       run: make test
