@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: update
+      run: sudo apt install g++11 libstdc++11-dev
     - name: Install Conan
       id: conan
       uses: turtlebrowser/get-conan@main
