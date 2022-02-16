@@ -29,9 +29,9 @@ TEST(sources, from_set) {
 }
 
 TEST(sources, enumerate_vector) {
-  std::vector<char> values = { 'a', 'c', 'e', 'k', 'j', 't' };
+  std::vector<char> values = {'a', 'c', 'e', 'k', 'j', 't'};
   size_t prev = 0;
-  for(auto v : fpgen::enumerate(values)) {
+  for (auto v : fpgen::enumerate(values)) {
     EXPECT_EQ(std::get<0>(v), prev);
     EXPECT_EQ(values[prev], std::get<1>(v));
     prev++;

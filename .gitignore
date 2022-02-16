@@ -2,7 +2,9 @@ docs/*
 test/obj/*
 test/bin/*
 test/conan/*
+cov/*
 
 !**/.gitkeep
 
 compile_flags.txt
+coverage.info
