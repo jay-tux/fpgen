@@ -28,6 +28,16 @@ TEST(sources, from_set) {
   EXPECT_TRUE(todo.empty());
 }
 
+TEST(sources, enumerate_vector) {
+  std::vector<char> values = { 'a', 'c', 'e', 'k', 'j', 't' };
+  size_t prev = 0;
+  for(auto v : fpgen::enumerate(values)) {
+    EXPECT_EQ(std::get<0>(v), prev);
+    EXPECT_EQ(values[prev], std::get<1>(v));
+    prev++;
+  }
+}
+
 TEST(sources, from_map_tup) {
   std::map<std::string, std::string> map = {{"key 1", "value 1"},
                                             {"key 2", "value 2"},

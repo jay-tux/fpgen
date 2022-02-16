@@ -21,13 +21,38 @@ namespace fpgen {
  *  \tparam Container The container type.
  *  \param[in] cont The container to iterate over.
  *  \returns A new generator which will iterate over the container.
- *  \see fpgen::from_tup
+ *  \see fpgen::from_tup, fpgen::enumerate
  */
 template <typename T, typename... TArgs,
           template <typename...> typename Container>
 generator<T> from(const Container<T, TArgs...> &cont) {
   for (auto it = std::begin(cont); it != std::end(cont); ++it) {
     co_yield *it;
+  }
+}
+
+/**
+ *  \brief Creates a generator over a data source, with indexing.
+ *
+ *  The data source does not have to allow indexing, but it is recommended for
+ * repeatable behaviour. If the index is not needed, use fpgen::from. The data
+ * source should support iterating (using `std::begin` and `std::end`).
+ *
+ *  \tparam T The type contained in the container.
+ *  \tparam TArgs Any other template parameters passed to the container.
+ *  \tparam Container The container type.
+ *  \param[in] cont The container to iterate over.
+ *  \returns A new generator which will iterate over the container using index
+ * and value.
+ * \see fpgen::from_tup, fpgen::enumerate
+ */
+template <typename T, typename... TArgs,
+          template <typename...> typename Container>
+generator<std::tuple<size_t, T>> enumerate(const Container<T, TArgs...> &cont) {
+  size_t i = 0;
+  for (auto it = std::begin(cont); it != std::end(cont); ++it) {
+    co_yield {i, *it};
+    i++;
   }
 }
 
