@@ -61,7 +61,8 @@ from_tup(const Container<TKey, TVal, TArgs...> &cont) {
  *
  *  The generator is contstructed by continuously incrementing (a copy of) the
  * given value. While mainly meant for integral types, any type supporting
- * operator++() (the prefix increment operator) can be used.
+ * operator++() (the prefix increment operator) can be used. The first value
+ * returned is the start value itself.
  *
  *  \tparam T The type to increment.
  *  \param[in] start The initial value.
