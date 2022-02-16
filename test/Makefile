@@ -1,8 +1,12 @@
 SOURCES=$(shell find $(SRCD) -name '*.cpp')
 DEPS=$(SOURCES:$(SRCD)/%.cpp=$(OBJD)/%.d)
-TESTS=generator
+TESTS=generator sources
+TESTOBJ=$(TESTS:%=$(OBJD)/test_%.o)
 
-all: dirs conan/conanbuildinfo.mak $(BIND)/generator
+CONAN_PKG_OVERRIDE=gtest
+CONAN_MODIFY=$(CONAN_PKG_OVERRIDE:%=-s %:compiler.version=11.2)
+
+all: dirs conan/conanbuildinfo.mak $(BIND)/_test
 
 -include $(DEPS)
 -include conan/conanbuildinfo.mak
@@ -11,21 +15,22 @@ LDXTRA=$(CONAN_LIB_DIRS:%=-L%) $(CONAN_LIBS:%=-l%) $(CONAN_SYSTEM_LIBS:%=-l%)
 
 dirs:
 	@([ ! -d $(OBJD)/generator ] && mkdir -p $(OBJD)/generator) || true
+	@([ ! -d $(OBJD)/sources ] && mkdir -p $(OBJD)/sources) || true
 
-$(BIND)/generator: $(OBJD)/generator/test_generator.o
-	$(CC) $< $(LDXTRA) $(LDARGS) -o $@
-	$(BIND)/generator --gtest_output="xml:$(BIND)/"
+$(BIND)/_test: $(TESTOBJ) $(OBJD)/test_main.o
+	$(CC) $(LDXTRA) $(LDARGS) $^ -o $@
+	$(BIND)/_test
 
 $(OBJD)/%.o: $(SRCD)/%.cpp Makefile
 	$(CC) $(CXXARGS) $(CXXXTRA) $< -o $@
 
 conan/conanbuildinfo.mak: conanfile.txt
 	@([ ! -d conan/ ] && mkdir -p conan/) || true
-	cd conan && CC=gcc CXX=$(CC) conan install .. --build=gtest
+	cd conan && CC=gcc CXX=$(CC) conan install .. $(CONAN_MODIFY) --build=gtest
 
 clean:
 	find ./bin/ -type f | grep -v '.gitkeep' | xargs rm -rf
 	find ./obj/ -type f | grep -v '.gitkeep' | xargs rm -rf
 	find ./conan/ -type f | grep -v '.gitkeep' | xargs rm -rf
 
-.PHONY: all dirs clean
+.PHONY: all dirs clean $(TESTS:%=$(BIND)/%)
