@@ -201,6 +201,8 @@ public:
       if (!source)
         is_finished = true;
       value = source();
+      if (!source)
+        is_finished = true;
       return {source, is_finished, value};
     }
 
