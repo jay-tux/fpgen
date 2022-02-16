@@ -14,7 +14,7 @@ using namespace experimental;
 #include <exception>
 
 /**
- *  @brief The namespace containing all of fpgen's code.
+ *  \brief The namespace containing all of fpgen's code.
  */
 namespace fpgen {
 #if _FPGEN_USE_CONCEPTS
