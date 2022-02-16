@@ -13,11 +13,12 @@ Currently supported features:
    - Create generators from `std::` containers with a single type argument, with and without indexing.
    - Create generators from `std::` containers with two type arguments.
    - Create generators from incrementable types (using `operator++(void)`).
-
-Planned/In progress features:
  - Commonly used manipulators:
    - Lazy `map`ping over generators.
    - Lazy `zip`ping of generators.
+   - Lazy `filter`ing of generators.
+
+Planned/In progress features:
  - Commonly used aggregators:
    - Lazy `fold`ing of generators.
    - Lazy `sum`ming of generators.
