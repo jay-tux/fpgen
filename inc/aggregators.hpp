@@ -63,6 +63,26 @@ tup_aggregate_to(generator<std::tuple<TKey, TVal>> &gen,
   }
   return out;
 }
+
+/**
+ *  \brief Counts the amount of elements in the generator.
+ *
+ *  Each element is extracted from the generator. These values are not
+ * recoverable. Only values left in the generator are counted. Afterwards, the
+ * generator will be empty.
+ *
+ *  \tparam T The type of values contained in the generator.
+ *  \param[in,out] gen The generator to iterate over.
+ *  \returns The amount of elements in the generator.
+ */
+template <typename T> size_t count(generator<T> &gen) {
+  size_t cnt = 0;
+  while (gen) {
+    gen();
+    cnt++;
+  }
+  return cnt;
+}
 } // namespace fpgen
 
 #endif

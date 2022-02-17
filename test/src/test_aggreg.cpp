@@ -67,3 +67,14 @@ TEST(aggregate, map) {
   EXPECT_EQ(34, res[34]);
   EXPECT_EQ(res.size(), 9);
 }
+
+TEST(aggregate, count_empty) {
+  auto gen = a_empty();
+  gen();
+  EXPECT_EQ(0, fpgen::count(gen));
+}
+
+TEST(aggregate, count) {
+  auto gen = values();
+  EXPECT_EQ(10, fpgen::count(gen));
+}
