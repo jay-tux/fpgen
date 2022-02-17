@@ -83,6 +83,123 @@ template <typename T> size_t count(generator<T> &gen) {
   }
   return cnt;
 }
+
+/**
+ *  \brief Accumulates each value in the generator using the provided function.
+ *
+ *  For each element in the generator, the provided function (which should have
+ * (TOut, TIn) -> TOut) as signature is called. The result is stored in the
+ * accumulator, which is passed down to the next value in the generator. Once
+ * all values are extracted, the resulting accumulator is returned. The
+ * accumulator is initialized using `TOut value = {};`.
+ *
+ *  \tparam TOut The output type (accumulator type).
+ *  \tparam TIn The input type (type contained in the generator).
+ *  \tparam Fun The function type (should have the signature (TOut, TIn) ->
+ * TOut).
+ *  \param[in,out] gen The generator to fold.
+ *  \param[in] folder The folding function.
+ *  \returns The final accumulator value.
+ */
+template <typename TOut, typename TIn, typename Fun>
+TOut fold(generator<TIn> &gen, Fun folder) {
+  TOut value = {};
+  while (gen) {
+    value = folder(value, gen());
+  }
+  return value;
+}
+
+/**
+ *  \brief Accumulates each value in the generator using the provided function.
+ *
+ *  For each element in the generator, the provided function (which should have
+ * (TOut, TIn) -> TOut) as signature is called. The result is stored in the
+ * accumulator, which is passed down to the next value in the generator. Once
+ * all values are extracted, the resulting accumulator is returned. The
+ * accumulator is initialized using `TOut value(initial);`.
+ *
+ *  \tparam TOut The output type (accumulator type).
+ *  \tparam TIn The input type (type contained in the generator).
+ *  \tparam Fun The function type (should have the signature (TOut, TIn) ->
+ * TOut).
+ *  \param[in,out] gen The generator to fold.
+ *  \param[in] folder The folding function.
+ *  \param[in] initial The initial value for the accumulator (is copied).
+ *  \returns The final accumulator value.
+ */
+template <typename TOut, typename TIn, typename Fun>
+TOut fold(generator<TIn> &gen, Fun folder, TOut initial) {
+  TOut value(initial);
+  while (gen) {
+    value = folder(value, gen());
+  }
+  return value;
+}
+
+/**
+ *  \brief Accumulates each value in the generator using the provided function.
+ *
+ *  For each element in the generator, the provided function (which should have
+ * (TOut, TIn) -> TOut) as signature is called. The result is stored in the
+ * provided accumulator, which is passed down to the next value in the
+ * generator. Once all values are extracted, the resulting accumulator is
+ * returned. Each step modifies the accumulator.
+ *
+ *  \tparam TOut The output type (accumulator type).
+ *  \tparam TIn The input type (type contained in the generator).
+ *  \tparam Fun The function type (should have the signature (TOut, TIn) ->
+ * TOut or (TOut &, TIn) -> TOut).
+ *  \param[in,out] gen The generator to fold.
+ *  \param[in] folder The folding function.
+ *  \param[out] initial The initial value for the accumulator (is overwritten).
+ *  \returns A reference to the value which was passed as initial value and is
+ * now the output value.
+ */
+template <typename TOut, typename TIn, typename Fun>
+TOut &fold_ref(generator<TIn> &gen, Fun folder, TOut &initial) {
+  while (gen) {
+    initial = folder(initial, gen());
+  }
+  return initial;
+}
+
+/**
+ *  \brief Sums each value in the generator.
+ *
+ *  The type contained in the generator should support `operator+`. An initial
+ * accumulator is constructed using `T accum = {}`. Each next value is added to
+ * the accumulator, which is returned afterwards.
+ *
+ *  \tparam T The type contained in the generator, should support `operator+`.
+ *  \param[in,out] gen The generator to sum over.
+ *  \returns The sum of all elements.
+ */
+template <typename T> T sum(generator<T> &gen) {
+  T accum = {};
+  while (gen) {
+    accum = accum + gen();
+  }
+  return accum;
+}
+
+/**
+ *  \brief Loops over the generator, calling a function on each element in it.
+ *
+ *  Each element is extracted from the generator and used only as function
+ * argument. All other aggregators can be written as a combination of this
+ * function and a lambda function. Afterwards, the generator will be empty.
+ *
+ *  \tparam T The type of values contained in the generator.
+ *  \tparam Fun The function type of the callback.
+ *  \param[in,out] gen The generator to iterate over.
+ *  \param[in] func The function to use.
+ */
+template <typename T, typename Fun> void foreach (generator<T> &gen, Fun func) {
+  while (gen) {
+    func(gen());
+  }
+}
 } // namespace fpgen
 
 #endif

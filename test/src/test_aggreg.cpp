@@ -25,6 +25,25 @@ fpgen::generator<size_t> values() {
   co_return i + j;
 }
 
+size_t calc_sum() {
+  size_t i = 0;
+  size_t j = 1;
+  size_t sum = 1;
+  while (j <= 21) {
+    size_t tmp = i + j;
+    sum += tmp;
+    i = j;
+    j = tmp;
+  }
+  return sum;
+}
+
+size_t sum(size_t old, size_t in) { return old + in; }
+size_t sum_ref(size_t &old, size_t in) {
+  old = old + in;
+  return old;
+}
+
 TEST(aggregate, empty) {
   auto gen = a_empty();
   gen();
@@ -77,4 +96,68 @@ TEST(aggregate, count_empty) {
 TEST(aggregate, count) {
   auto gen = values();
   EXPECT_EQ(10, fpgen::count(gen));
+}
+
+TEST(fold, fold_noin_empty) {
+  auto gen = a_empty();
+  gen();
+  EXPECT_EQ(0, fpgen::fold<size_t>(gen, sum));
+}
+
+TEST(fold, fold_noin) {
+  auto gen = values();
+  EXPECT_EQ(calc_sum(), fpgen::fold<size_t>(gen, sum));
+}
+
+TEST(fold, fold_in_noref_empty) {
+  auto gen = a_empty();
+  gen();
+  EXPECT_EQ(7, fpgen::fold<size_t>(gen, sum, 7));
+}
+
+TEST(fold, fold_in_noref) {
+  auto gen = values();
+  EXPECT_EQ(calc_sum() + 7, fpgen::fold<size_t>(gen, sum, 7));
+}
+
+TEST(fold, fold_in_ref_empty) {
+  auto gen = a_empty();
+  gen();
+  size_t res = 7;
+  EXPECT_EQ(7, fpgen::fold_ref<size_t>(gen, sum, res));
+  EXPECT_EQ(7, res);
+}
+
+TEST(fold, fold_in_ref) {
+  auto gen = values();
+  size_t res = 7;
+  EXPECT_EQ(calc_sum() + 7, fpgen::fold_ref<size_t>(gen, sum, res));
+  EXPECT_EQ(calc_sum() + 7, res);
+}
+
+TEST(sum, empty) {
+  auto gen = a_empty();
+  gen();
+  EXPECT_EQ(0, fpgen::sum(gen));
+}
+
+TEST(sum, normal) {
+  auto gen = values();
+  EXPECT_EQ(calc_sum(), fpgen::sum(gen));
+}
+
+TEST(foreach, empty) {
+  auto gen = a_empty();
+  gen();
+  size_t res = 0;
+  fpgen::foreach (gen, [&res](size_t val) { res += val; });
+  EXPECT_EQ(res, 0);
+}
+
+TEST(foreach, normal) {
+  auto gen = values();
+  auto gen2 = values();
+  size_t res = 0;
+  fpgen::foreach (gen, [&res](size_t val) { res += val; });
+  EXPECT_EQ(res, fpgen::sum(gen2));
 }
