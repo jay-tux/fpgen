@@ -17,11 +17,11 @@ Currently supported features:
    - Lazy `map`ping over generators.
    - Lazy `zip`ping of generators.
    - Lazy `filter`ing of generators.
-
-Planned/In progress features:
  - Commonly used aggregators:
    - Lazy `fold`ing of generators.
    - Lazy `sum`ming of generators.
+
+Planned/In progress features:
  - Ergonomic improvements:
    - Enable streaming `<<` of generators.
    - Simple structure which allows generator construction, manipulation and aggregation using member functions.
