@@ -133,3 +133,54 @@ TEST(manipulators, filter_normal) {
     i += 2;
   }
 }
+
+TEST(manipulators, drop_empty) {
+  auto gen = drop(manip_empty(), 5);
+  for (auto v : gen) {
+    FAIL() << "should not return a value";
+  }
+  SUCCEED();
+}
+
+TEST(manipulators, drop_normal) {
+  auto gen = drop(until12(), 5);
+  size_t exp = 5;
+  for (auto v : gen) {
+    EXPECT_EQ(v, exp);
+    EXPECT_TRUE(exp <= 12);
+    exp++;
+  }
+  EXPECT_EQ(exp, 13);
+}
+
+TEST(manipulators, take_empty) {
+  auto gen = take(manip_empty(), 4);
+  for (auto v : gen) {
+    FAIL() << "should not return a value";
+  }
+  SUCCEED();
+}
+
+TEST(manipulators, take_normal) {
+  auto gen = take(fpgen::inc((size_t)0), 8);
+  size_t exp = 0;
+  for (auto v : gen) {
+    EXPECT_EQ(v, exp);
+    EXPECT_TRUE(exp <= 8);
+    exp++;
+  }
+  EXPECT_EQ(exp, 8);
+}
+
+TEST(manipulators, drop_take) {
+  auto gen = take(drop(fpgen::inc((size_t)0), 4), 9);
+  for (size_t exp = 4; exp < 13; exp++) {
+    EXPECT_TRUE(static_cast<bool>(gen));
+    EXPECT_EQ(exp, gen());
+  }
+
+  for (auto v : gen) {
+    FAIL() << "should not return a value";
+  }
+  SUCCEED();
+}

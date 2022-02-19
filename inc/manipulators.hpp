@@ -78,6 +78,24 @@ generator<T> filter(generator<T> gen, Pred p) {
   }
   co_return;
 }
+
+template <typename T> generator<T> drop(generator<T> gen, size_t count) {
+  for (size_t i = 0; i < count && gen; i++) {
+    gen();
+  }
+
+  while (gen) {
+    co_yield gen();
+  }
+  co_return;
+}
+
+template <typename T> generator<T> take(generator<T> gen, size_t count) {
+  for (size_t i = 0; i < count && gen; i++) {
+    co_yield gen();
+  }
+  co_return;
+}
 } // namespace fpgen
 
 #endif
