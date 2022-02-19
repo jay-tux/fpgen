@@ -1,0 +1,6 @@
+#include "aggregators.hpp"
+#include "generator.hpp"
+#include "manipulators.hpp"
+#include "sources.hpp"
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"

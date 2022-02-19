@@ -25,7 +25,7 @@ namespace fpgen {
  * mapping function.
  */
 template <typename TIn, typename Fun>
-auto map(generator<TIn> &gen, Fun func)
+auto map(generator<TIn> gen, Fun func)
     -> generator<typename std::invoke_result<Fun, TIn>::type> {
   while (gen) {
     co_yield func(gen());
@@ -47,7 +47,7 @@ auto map(generator<TIn> &gen, Fun func)
  *  \returns A new generator containing tuples of values from both generators.
  */
 template <typename T1, typename T2>
-generator<std::tuple<T1, T2>> zip(generator<T1> &gen1, generator<T2> &gen2) {
+generator<std::tuple<T1, T2>> zip(generator<T1> gen1, generator<T2> gen2) {
   while (gen1 && gen2) {
     co_yield {gen1(), gen2()};
   }
@@ -70,7 +70,7 @@ generator<std::tuple<T1, T2>> zip(generator<T1> &gen1, generator<T2> &gen2) {
  * except those not matching the predicate.
  */
 template <typename T, typename Pred>
-generator<T> filter(generator<T> &gen, Pred p) {
+generator<T> filter(generator<T> gen, Pred p) {
   while (gen) {
     T val(gen());
     if (p(val))
