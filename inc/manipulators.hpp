@@ -96,6 +96,34 @@ template <typename T> generator<T> take(generator<T> gen, size_t count) {
   }
   co_return;
 }
+
+template <typename T, typename Pred>
+generator<T> drop_while(generator<T> gen, Pred p) {
+  while (gen) {
+    T temp = gen();
+    if (!p(temp)) {
+      co_yield temp;
+      break;
+    }
+  }
+
+  while (gen) {
+    co_yield gen();
+  }
+  co_return;
+}
+
+template <typename T, typename Pred>
+generator<T> take_while(generator<T> gen, Pred p) {
+  while (gen) {
+    T val = gen();
+    if (!p(val)) {
+      break;
+    }
+    co_yield val;
+  }
+  co_return;
+}
 } // namespace fpgen
 
 #endif

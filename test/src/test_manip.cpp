@@ -184,3 +184,41 @@ TEST(manipulators, drop_take) {
   }
   SUCCEED();
 }
+
+TEST(manipulators, drop_while_empty) {
+  auto gen = drop_while(manip_empty(), [](size_t v) { return v > 3; });
+  for (auto v : gen) {
+    FAIL() << "should not return a value";
+  }
+  SUCCEED();
+}
+
+TEST(manipulators, drop_while_normal) {
+  auto gen = drop_while(until12(), [](size_t v) { return v < 5; });
+  size_t exp = 5;
+  for (auto v : gen) {
+    EXPECT_EQ(v, exp);
+    EXPECT_TRUE(exp <= 12);
+    exp++;
+  }
+  EXPECT_EQ(exp, 13);
+}
+
+TEST(manipulators, take_while_empty) {
+  auto gen = take_while(manip_empty(), [](size_t v) { return v < 4; });
+  for (auto v : gen) {
+    FAIL() << "should not return a value";
+  }
+  SUCCEED();
+}
+
+TEST(manipulators, take_while_normal) {
+  auto gen = take_while(fpgen::inc((size_t)0), [](size_t v) { return v < 8; });
+  size_t exp = 0;
+  for (auto v : gen) {
+    EXPECT_EQ(v, exp);
+    EXPECT_TRUE(exp <= 8);
+    exp++;
+  }
+  EXPECT_EQ(exp, 8);
+}
