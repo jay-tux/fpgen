@@ -9,22 +9,22 @@
 #include <string>
 #include <vector>
 
-fpgen::generator<size_t> manip_empty() { co_return 0; }
+fpgen::generator<size_t> manip_empty() { co_return; }
 
 fpgen::generator<size_t> manip() {
   size_t i = 1;
-  while (i < 1024) {
+  while (i <= 1024) {
     co_yield i;
     i *= 2;
   }
-  co_return i;
+  co_return; // i;
 }
 
 fpgen::generator<size_t> until12() {
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i <= 12; i++) {
     co_yield i;
   }
-  co_return 12;
+  co_return; // 12;
 }
 
 size_t mapper(size_t v) { return v * v; }
@@ -33,7 +33,7 @@ bool over_100(size_t v) { return (v > 100); }
 
 TEST(manipulators, map_empty) {
   auto gen = manip_empty();
-  gen();
+  // gen();
 
   for (auto v : fpgen::map(gen, mapper)) {
     FAIL() << "Should not return a value";
@@ -54,8 +54,8 @@ TEST(manipulators, map) {
 TEST(manipulators, zip_both_empty) {
   auto gen = manip_empty();
   auto gen2 = manip_empty();
-  gen();
-  gen2();
+  // gen();
+  // gen2();
 
   for (auto v : fpgen::zip(gen, gen2)) {
     FAIL() << "Should not return a value";
@@ -66,7 +66,7 @@ TEST(manipulators, zip_both_empty) {
 TEST(manipulators, zip_first_empty) {
   auto gen = manip_empty();
   auto gen2 = fpgen::inc((size_t)0);
-  gen();
+  // gen();
 
   for (auto v : fpgen::zip(gen, gen2)) {
     FAIL() << "Should not return a value";
@@ -77,7 +77,7 @@ TEST(manipulators, zip_first_empty) {
 TEST(manipulators, zip_second_empty) {
   auto gen = fpgen::inc((size_t)0);
   auto gen2 = manip_empty();
-  gen2();
+  // gen2();
 
   for (auto v : fpgen::zip(gen, gen2)) {
     FAIL() << "Should not return a value";
@@ -105,7 +105,7 @@ TEST(manipulators, zip_none_empty) {
 
 TEST(manipulators, filter_empty) {
   auto gen = manip_empty();
-  gen();
+  // gen();
 
   size_t i = 0;
 

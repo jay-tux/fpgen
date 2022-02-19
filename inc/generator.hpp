@@ -100,7 +100,10 @@ public:
      * coroutine calls `co_return`, the environment will call this function.
      *  \param[in] v The value to set.
      */
-    void return_value(value_type v) { value = v; }
+    // void return_value(value_type v) { value = v; }
+
+    void return_void() {}
+
     /**
      *  \brief Sets an intermediate value from the coroutine.
      *
@@ -155,12 +158,12 @@ public:
      *  This value should only be true when the underlying generator is
      * finished. Iterators are compared based on this value.
      */
-    bool is_finished;
+    // bool is_finished;
     /**
      *  \brief The last value from the coroutine (and thus, the value currently
      * held by the generator's promise).
      */
-    value_t value;
+    // value_t value;
 
     /**
      *  \brief Constructs a new iterator from a source generator.
@@ -173,8 +176,7 @@ public:
      * modified).
      *  \param[in] is_finised Is this an `end` iterator?
      */
-    iterator_type(gen_t &source, bool is_finised)
-        : source{source}, is_finished{is_finised} {
+    iterator_type(gen_t &source, bool is_finised) : source{source} {
       if (!is_finised)
         ++(*this);
     }
@@ -190,20 +192,15 @@ public:
      *  \param[in] is_finised Is this iterator finished?
      *  \param[in] value The value this iterator should hold.
      */
-    iterator_type(gen_t &source, bool is_finished, value_t value)
-        : source{source}, is_finished{is_finished}, value{value} {}
+    iterator_type(gen_t &source) : source{source} {}
 
     /**
      *  \brief Steps the generator to the next value.
      *  \returns A new iterator for this generator, with the same state.
      */
     iter_t operator++() {
-      if (!source)
-        is_finished = true;
-      value = source();
-      if (!source)
-        is_finished = true;
-      return {source, is_finished, value};
+      source.next();
+      return {source};
     }
 
     /**
@@ -219,19 +216,20 @@ public:
      *  \param[in] other The iterator to compare against.
      *  \returns False if both are equal, otherwise true.
      */
-    bool operator!=(const iter_t &other) {
-      return is_finished != other.is_finished;
-    }
+    bool operator!=(const iter_t &) { return static_cast<bool>(source); }
     /**
      *  \brief Gets the current value from the iterator.
      *  \returns The current value.
      */
-    value_t operator*() { return value; }
+    value_t operator*() {
+      source.contains = false;
+      return source._h.promise().value;
+    }
     /**
      *  \brief Converts this iterator to the current value.
      *  \returns The current value.
      */
-    operator value_t() { return value; }
+    operator value_t() { return source._h.promise().value; }
   };
 
   /**
@@ -250,12 +248,13 @@ public:
    *  This method should only be called from the environment.
    *  \param[in] p The promise to use.
    */
-  generator(promise_type &p) : _h{handle_type::from_promise(p)} {}
+  generator(promise_type &p)
+      : _h{handle_type::from_promise(p)}, contains{false} {}
 
   /**
    *  \brief Copy-constructing generators results in undefined behaviour.
    */
-  generator(const generator &other) = delete;
+  generator(const generator &other) = default;
   /**
    *  \brief Moves the data from the other generator into this one.
    *  \param[in,out] other The other generator.
@@ -265,7 +264,7 @@ public:
   /**
    *  \brief Copy-assigning generators results in undefined behaviour.
    */
-  generator &operator=(const generator &other) = delete;
+  generator &operator=(const generator &other) = default;
   /**
    *  \brief Moves the data from the other generator into this one.
    *  \param[in,out] other The other generator.
@@ -287,7 +286,12 @@ public:
    *  \brief Converts this generator to a bool.
    *  \returns True if more values remain, otherwise false.
    */
-  operator bool() const { return !_h.done(); }
+  operator bool() {
+    if (_h.done())
+      return false;
+    next();
+    return !_h.done();
+  }
 
   /**
    *  \brief Gets an iterator to the current coroutine state.
@@ -312,15 +316,23 @@ public:
    * that can be thrown from the coroutine.
    */
   value_type operator()() {
-    if (*this)
-      _h();
-    if (_h.promise().ex)
-      std::rethrow_exception(_h.promise().ex);
-    return _h.promise().value;
+    next();
+    contains = false;
+    return std::move(_h.promise().value);
   }
 
 private:
   handle_type _h;
+  bool contains;
+
+  void next() {
+    if (!contains) {
+      _h();
+      if (_h.promise().ex)
+        std::rethrow_exception(_h.promise().ex);
+      contains = true;
+    }
+  }
 };
 
 } // namespace fpgen

@@ -30,6 +30,7 @@ auto map(generator<TIn> &gen, Fun func)
   while (gen) {
     co_yield func(gen());
   }
+  co_return;
 }
 
 /**
@@ -50,6 +51,7 @@ generator<std::tuple<T1, T2>> zip(generator<T1> &gen1, generator<T2> &gen2) {
   while (gen1 && gen2) {
     co_yield {gen1(), gen2()};
   }
+  co_return;
 }
 
 /**
@@ -74,6 +76,7 @@ generator<T> filter(generator<T> &gen, Pred p) {
     if (p(val))
       co_yield val;
   }
+  co_return;
 }
 } // namespace fpgen
 

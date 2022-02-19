@@ -3,6 +3,7 @@
 
 #include "generator.hpp"
 #include "sources.hpp"
+#include <variant>
 
 namespace fpgen {
 template <typename T> struct remove_generator {};
@@ -10,17 +11,15 @@ template <typename T> struct remove_generator<generator<T>> { using type = T; };
 
 template <typename T> class stream {
 public:
-  stream(generator<T> gen) : source{std::move(gen)} {}
-  stream(const stream<T> &other) = delete;
-  stream(stream<T> &&other) { *this = std::move(other); }
+  stream(generator<T> gen) : source{gen} {}
 
-  stream &operator=(const stream<T> &other) = delete;
-  stream &operator=(stream<T> &&other) { source = std::move(other); }
-
-  template <typename Func> auto operator<<(Func f) {
-    return stream<typename remove_generator<
-        std::invoke_result_t<Func, generator<T>>>::type>{f(std::move(source))};
+  template <typename... TArgs, template <typename...> typename Container>
+  Container<T, TArgs...> &operator>>(Container<T, TArgs...> &cont) {
+    return aggregate_to(source, cont);
   }
+
+  operator generator<T> &() { return source; }
+  generator<T> &get_generator() { return source; }
 
 private:
   generator<T> source;
