@@ -3,6 +3,7 @@
 
 #include "generator.hpp"
 #include <forward_list>
+#include <ostream>
 #include <tuple>
 #include <type_traits>
 
@@ -199,6 +200,44 @@ template <typename T, typename Fun> void foreach (generator<T> gen, Fun func) {
   while (gen) {
     func(gen());
   }
+}
+
+template <typename T>
+std::ostream &to_stream(generator<T> gen, std::ostream &stream) {
+  while (gen) {
+    stream << gen();
+  }
+  return stream;
+}
+
+template <typename T, typename T2>
+std::ostream &to_stream(generator<T> gen, std::ostream &stream, T2 separator) {
+  if (gen) {
+    stream << gen();
+  }
+  while (gen) {
+    stream << separator << gen();
+  }
+  return stream;
+}
+
+template <typename T>
+std::ostream &to_lines(generator<T> gen, std::ostream &stream) {
+  while (gen) {
+    stream << gen() << std::endl;
+  }
+  return stream;
+}
+
+template <typename T>
+std::ostream &to_lines_no_trail(generator<T> gen, std::ostream &stream) {
+  if (gen) {
+    stream << gen();
+  }
+  while (gen) {
+    stream << std::endl << gen();
+  }
+  return stream;
 }
 } // namespace fpgen
 

@@ -1,6 +1,6 @@
 # fpgen
 *Functional programming in C++ using C++20 coroutines*  
-![](https://img.shields.io/badge/test_coverage-96.5%25-brightgreen)
+![](https://img.shields.io/badge/test_coverage-96.9%25-brightgreen)
 
 
 ## Aim
