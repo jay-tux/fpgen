@@ -64,8 +64,8 @@ generator<std::tuple<T1, T2>> zip(generator<T1> gen1, generator<T2> gen2) {
  *  \tparam T The type contained in the generator.
  *  \tparam Pred The function type of the predicate function. Should return a
  * bool.
- *  \param gen The generator containing the original values.
- *  \param p The predicate.
+ *  \param[in,out] gen The generator containing the original values.
+ *  \param[in] p The predicate.
  *  \returns A new generator which yields all values in the original generator
  * except those not matching the predicate.
  */
@@ -79,6 +79,19 @@ generator<T> filter(generator<T> gen, Pred p) {
   co_return;
 }
 
+/**
+ *  \brief Ignores the first n elements from a generator.
+ *
+ *  Extracts the first `count` elements from the generator and throws those
+ * away. All subsequent elements in the generator are passed through as normal.
+ * If there aren't enough elements in the original generator, an empty generator
+ * is returned.
+ *
+ *  \tparam T The type contained in the generator.
+ *  \param[in,out] gen The generator to drop from.
+ *  \param[in] count The amount of elements to ignore.
+ *  \returns A new generator yielding all values except the first n.
+ */
 template <typename T> generator<T> drop(generator<T> gen, size_t count) {
   for (size_t i = 0; i < count && gen; i++) {
     gen();
@@ -90,6 +103,19 @@ template <typename T> generator<T> drop(generator<T> gen, size_t count) {
   co_return;
 }
 
+/**
+ *  \brief Yields the first n elements from a generator.
+ *
+ *  Extracts and yields exactly `count` elements (or less if the generator
+ * doesn't contain that much values). The iteration is then stopped and no
+ * further elements will be generated. If generation has side effects, the side
+ * effects of elements after the first n will not be observable.
+ *
+ *  \tparam T The type contained in the generator.
+ *  \param[in,out] gen The generator to take elements from.
+ *  \param[in] count The amount of elements to yield.
+ *  \returns A new generator yielding only the first n values.
+ */
 template <typename T> generator<T> take(generator<T> gen, size_t count) {
   for (size_t i = 0; i < count && gen; i++) {
     co_yield gen();
@@ -97,6 +123,22 @@ template <typename T> generator<T> take(generator<T> gen, size_t count) {
   co_return;
 }
 
+/**
+ *  \brief Drops elements while they satisfy a certain predicate.
+ *
+ *  Iterates over the elements in the generator and drops them until it
+ * encounters a value not satisfying the predicate (`!p(value)` is true). Then
+ * it starts yielding each remaining value in the generator. To remove all
+ * values satisfying `p`, use `fpgen::filter(gen, [&p](auto v) { return !p(v);
+ * });`.
+ *
+ *  \tparam T The type contained in the generator.
+ *  \tparam Pred The type of the predicate (should be a T -> bool function).
+ *  \param gen The generator to drop elements from.
+ *  \param p The predicate.
+ *  \returns A new generator where the first element is guaranteed to not
+ * satisfy `p`.
+ */
 template <typename T, typename Pred>
 generator<T> drop_while(generator<T> gen, Pred p) {
   while (gen) {
@@ -113,6 +155,23 @@ generator<T> drop_while(generator<T> gen, Pred p) {
   co_return;
 }
 
+/**
+ *  \brief Yields elements while they satisfy a certain predicate.
+ *
+ *  Iterates over the elements in the generator and yields them until it
+ * encounters a value not satisfying the predicate (`!p(value)`). Then it stops
+ * generating (any side effects from the subsequent elements won't be
+ * observable). To obtain a generator with all elements satisfying `p`, use
+ * `fpgen::filter(gen, p);` instead.
+ *
+ *  \tparam T The type contained in the generator.
+ *  \tparam Pred The type of the predicate (should be a T -> bool function).
+ *  \param gen The generator to take elements from.
+ *  \param p The predicate.
+ *  \returns A new generator where all elements are guaranteed to satisfy the
+ * predicate and were generated before any element which didn't satisfy the
+ * predicate.
+ */
 template <typename T, typename Pred>
 generator<T> take_while(generator<T> gen, Pred p) {
   while (gen) {
