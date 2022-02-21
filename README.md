@@ -23,6 +23,35 @@ Currently supported features:
 
 Got another idea? Drop a feature request on the repo.
 
+## Building
+The build system for fpgen is GNU make. The following targets are available:
+
+ Target name | Usage
+ --- | ---
+ `all` | Show all targets (Default target)
+ `install` | installs the headers under
+ `uninstall` | uninstalls the headers
+ `docs` | generates the documentation using doxygen
+ `test` | builds and runs the tests
+ `clean` | cleans up test builds and documentation
+ `coverage` | builds and runs the tests, then generates a coverage report
+
+Some targets provide parameters you can overload:
+
+ Parameter name | Usage | Default value | Applicable targets
+ --- | --- | --- | ---
+ `CC` | The C++ compiler | `g++` | test, coverage
+ `EXTRA_CXX` | Additional C++ compilation arguments |  | test, coverage
+ `EXTRA_LD` | Additional C++ linking arguments |  | test, coverage
+ `BUILD_DIR` | Object directory for tests | `./test/obj` | test, coverage
+ `BIN_DIR` | Test binary directory | `./test/bin` | test, coverage
+ `TEST_DIR` | Test source directory | `./test/src` | test, coverage
+ `INSTALL_DIR` | Header installation directory | `/usr/include/fpgen` | install, uninstall
+ `INCL_PATH` | Directory containing the headers | `./inc/` | install, docs, test, coverage
+ `DOC_DIR` | Documentation output directory | `./docs/` | docs
+ `BROWSER` | Default browser for (HTML) docs and coverage reports | `firefox` | docs, coverage
+ `HTMLDIR` | Output directory for HTML coverage reports | `./cov/` | coverage
+
 ## Requirements
 This project strongly depends on C++20. For an optimal experience, I recommend GCC version 11.2 or greater.  
 For the tests, we rely on Google Test via the Conan package manager, so make sure you have that installed as well.  
