@@ -6,6 +6,7 @@
 #include "gtest/gtest.h"
 
 #include <map>
+#include <sstream>
 #include <vector>
 
 fpgen::generator<size_t> a_empty() { co_return; }
@@ -169,4 +170,41 @@ TEST(foreach, normal) {
   size_t res = 0;
   fpgen::foreach (gen, [&res](size_t val) { res += val; });
   EXPECT_EQ(res, fpgen::sum(gen2));
+}
+
+TEST(stream, nosep) {
+  std::vector<int> vals = {1, 2, 3, 4, 5, 6};
+  auto gen = fpgen::from(vals);
+  std::stringstream strm;
+  fpgen::to_stream(gen, strm);
+  EXPECT_EQ(strm.str(), "123456");
+}
+
+TEST(stream, sep) {
+  std::vector<int> vals = {1, 2, 3, 4, 5, 6, 7};
+  auto gen = fpgen::from(vals);
+  std::stringstream strm;
+  fpgen::to_stream(gen, strm, " ");
+  EXPECT_EQ(strm.str(), "1 2 3 4 5 6 7");
+}
+
+TEST(stream, lines_trail) {
+  std::vector<int> vals = {1, 2, 3, 4};
+  auto gen = fpgen::from(vals);
+  std::stringstream strm;
+  std::stringstream expect;
+  for (auto v : vals)
+    expect << v << std::endl;
+  fpgen::to_lines(gen, strm);
+  EXPECT_EQ(strm.str(), expect.str());
+}
+
+TEST(stream, lines_no_trail) {
+  std::vector<int> vals = {1, 2, 3, 4};
+  auto gen = fpgen::from(vals);
+  std::stringstream strm;
+  std::stringstream expect;
+  expect << 1 << std::endl << 2 << std::endl << 3 << std::endl << 4;
+  fpgen::to_lines_no_trail(gen, strm);
+  EXPECT_EQ(strm.str(), expect.str());
 }
