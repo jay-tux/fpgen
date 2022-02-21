@@ -202,6 +202,17 @@ template <typename T, typename Fun> void foreach (generator<T> gen, Fun func) {
   }
 }
 
+/**
+ *  \brief Sends each value to the stream.
+ *
+ *  Calls `stream << value` for each value in the generator, then returns the
+ * resulting (modified) stream.
+ *
+ *  \tparam T The type of values in the stream.
+ *  \param[in,out] gen The generator supplying the values.
+ *  \param[in,out] stream The stream to output to.
+ *  \returns The resulting stream.
+ */
 template <typename T>
 std::ostream &to_stream(generator<T> gen, std::ostream &stream) {
   while (gen) {
@@ -210,6 +221,21 @@ std::ostream &to_stream(generator<T> gen, std::ostream &stream) {
   return stream;
 }
 
+/**
+ *  \brief Sends each value to the stream. Values are separated by the given
+ * separator.
+ *
+ *  Calls `stream << value` for each value in the generator, then returns the
+ * resulting (modified) stream. Between each pair of values in the generator,
+ * the separator is added.
+ *
+ *  \tparam T The type of values in the stream.
+ *  \tparam T2 The type of the separator.
+ *  \param[in,out] gen The generator supplying the values.
+ *  \param[in,out] stream The stream to output to.
+ *  \param[in] separator The separator to use.
+ *  \returns The resulting stream.
+ */
 template <typename T, typename T2>
 std::ostream &to_stream(generator<T> gen, std::ostream &stream, T2 separator) {
   if (gen) {
@@ -221,6 +247,18 @@ std::ostream &to_stream(generator<T> gen, std::ostream &stream, T2 separator) {
   return stream;
 }
 
+/**
+ *  \brief Sends each value to the stream on a separate line.
+ *
+ *  Calls `stream << value << std::endl` for each value in the generator, then
+ * returns the resulting (modified) stream. To avoid a trailing newline, see
+ * `fpgen::to_lines_no_trail`
+ *
+ *  \tparam T The type of values in the stream.
+ *  \param[in,out] gen The generator supplying the values.
+ *  \param[in,out] stream The stream to output to.
+ *  \returns The resulting stream.
+ */
 template <typename T>
 std::ostream &to_lines(generator<T> gen, std::ostream &stream) {
   while (gen) {
@@ -229,6 +267,18 @@ std::ostream &to_lines(generator<T> gen, std::ostream &stream) {
   return stream;
 }
 
+/**
+ *  \brief Sends each value to the stream on a separate line, without trailing
+ * newline.
+ *
+ *  Calls `stream << std::endl << value` for each value in the generator (except
+ * the first), then returns the resulting (modified) stream.
+ *
+ *  \tparam T The type of values in the stream.
+ *  \param[in,out] gen The generator supplying the values.
+ *  \param[in,out] stream The stream to output to.
+ *  \returns The resulting stream.
+ */
 template <typename T>
 std::ostream &to_lines_no_trail(generator<T> gen, std::ostream &stream) {
   if (gen) {
