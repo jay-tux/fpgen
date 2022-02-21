@@ -21,11 +21,6 @@ Currently supported features:
    - Lazy `fold`ing of generators.
    - Lazy `sum`ming of generators.
 
-Planned/In progress features:
- - Ergonomic improvements:
-   - Enable streaming `<<` of generators.
-   - Simple structure which allows generator construction, manipulation and aggregation using member functions.
-
 Got another idea? Drop a feature request on the repo.
 
 ## Requirements
