@@ -2,7 +2,6 @@
 #define _FPGEN_SOURCES
 
 #include "generator.hpp"
-#include <iostream>
 #include <iterator>
 
 /**
@@ -29,6 +28,7 @@ generator<T> from(const Container<T, TArgs...> &cont) {
   for (auto it = std::begin(cont); it != std::end(cont); ++it) {
     co_yield *it;
   }
+  co_return;
 }
 
 /**
@@ -54,6 +54,7 @@ generator<std::tuple<size_t, T>> enumerate(const Container<T, TArgs...> &cont) {
     co_yield {i, *it};
     i++;
   }
+  co_return;
 }
 
 /**
@@ -79,6 +80,7 @@ from_tup(const Container<TKey, TVal, TArgs...> &cont) {
   for (auto it = cont.begin(); it != cont.end(); ++it) {
     co_yield *it;
   }
+  co_return;
 }
 
 /**

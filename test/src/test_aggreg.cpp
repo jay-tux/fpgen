@@ -1,13 +1,14 @@
 #include "aggregators.hpp"
 #include "generator.hpp"
 #include "manipulators.hpp"
+#include "sources.hpp"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #include <map>
 #include <vector>
 
-fpgen::generator<size_t> a_empty() { co_return 0; }
+fpgen::generator<size_t> a_empty() { co_return; }
 
 fpgen::generator<size_t> values() {
   size_t i = 0;
@@ -15,14 +16,14 @@ fpgen::generator<size_t> values() {
   co_yield 0;
   co_yield 1;
 
-  while (j < 21) {
+  while (j <= 21) {
     size_t tmp = i + j;
     co_yield tmp;
     i = j;
     j = tmp;
   }
 
-  co_return i + j;
+  // co_return i + j;
 }
 
 size_t calc_sum() {
@@ -46,7 +47,7 @@ size_t sum_ref(size_t &old, size_t in) {
 
 TEST(aggregate, empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   std::vector<size_t> res;
   EXPECT_EQ(0, fpgen::aggregate_to(gen, res).size());
 }
@@ -69,6 +70,14 @@ TEST(aggregate, vector) {
   EXPECT_EQ(res.size(), 10);
 }
 
+TEST(aggregate, vec_to_vec) {
+  std::vector<size_t> in = {0, 1, 2, 3, 4, 5, 6};
+  std::vector<size_t> out = {};
+  auto gen = fpgen::from(in);
+  out = fpgen::aggregate_to(gen, out);
+  EXPECT_EQ(in, out);
+}
+
 TEST(aggregate, map) {
   fpgen::generator<size_t> sources[2] = {values(), values()};
   auto gen = fpgen::zip(sources[0], sources[1]);
@@ -89,7 +98,7 @@ TEST(aggregate, map) {
 
 TEST(aggregate, count_empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   EXPECT_EQ(0, fpgen::count(gen));
 }
 
@@ -100,7 +109,7 @@ TEST(aggregate, count) {
 
 TEST(fold, fold_noin_empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   EXPECT_EQ(0, fpgen::fold<size_t>(gen, sum));
 }
 
@@ -111,7 +120,7 @@ TEST(fold, fold_noin) {
 
 TEST(fold, fold_in_noref_empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   EXPECT_EQ(7, fpgen::fold<size_t>(gen, sum, 7));
 }
 
@@ -122,7 +131,7 @@ TEST(fold, fold_in_noref) {
 
 TEST(fold, fold_in_ref_empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   size_t res = 7;
   EXPECT_EQ(7, fpgen::fold_ref<size_t>(gen, sum, res));
   EXPECT_EQ(7, res);
@@ -137,7 +146,7 @@ TEST(fold, fold_in_ref) {
 
 TEST(sum, empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   EXPECT_EQ(0, fpgen::sum(gen));
 }
 
@@ -148,7 +157,7 @@ TEST(sum, normal) {
 
 TEST(foreach, empty) {
   auto gen = a_empty();
-  gen();
+  // gen();
   size_t res = 0;
   fpgen::foreach (gen, [&res](size_t val) { res += val; });
   EXPECT_EQ(res, 0);

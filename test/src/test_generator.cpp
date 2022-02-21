@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 #include <iostream>
 
-fpgen::generator<float> empty() { co_return 0; }
+fpgen::generator<float> empty() { co_return; }
 
 fpgen::generator<int> infinite() {
   int value = 0;
@@ -14,10 +14,10 @@ fpgen::generator<int> infinite() {
 }
 
 fpgen::generator<long> finite_squares(int min, int max) {
-  for (int val = min; val < max; val++) {
+  for (int val = min; val <= max; val++) {
     co_yield val *val;
   }
-  co_return max *max;
+  co_return; // max *max;
 }
 
 TEST(generator, accept_empty_gen) {
@@ -27,7 +27,7 @@ TEST(generator, accept_empty_gen) {
 
 TEST(generator, iterator_empty_gen) {
   auto gen = empty();
-  gen();
+  // gen();
   for (auto v : gen) {
     FAIL();
   }

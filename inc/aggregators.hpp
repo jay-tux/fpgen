@@ -28,7 +28,7 @@ namespace fpgen {
  */
 template <typename T, typename... Args,
           template <typename...> typename Container>
-Container<T, Args...> &aggregate_to(generator<T> &gen,
+Container<T, Args...> &aggregate_to(generator<T> gen,
                                     Container<T, Args...> &out) {
   while (gen) {
     out.push_back(gen());
@@ -55,7 +55,7 @@ Container<T, Args...> &aggregate_to(generator<T> &gen,
 template <typename TKey, typename TVal, typename... Args,
           template <typename...> typename Container>
 Container<TKey, TVal, Args...> &
-tup_aggregate_to(generator<std::tuple<TKey, TVal>> &gen,
+tup_aggregate_to(generator<std::tuple<TKey, TVal>> gen,
                  Container<TKey, TVal, Args...> &out) {
   while (gen) {
     std::tuple<TKey, TVal> tup = gen();
@@ -75,7 +75,7 @@ tup_aggregate_to(generator<std::tuple<TKey, TVal>> &gen,
  *  \param[in,out] gen The generator to iterate over.
  *  \returns The amount of elements in the generator.
  */
-template <typename T> size_t count(generator<T> &gen) {
+template <typename T> size_t count(generator<T> gen) {
   size_t cnt = 0;
   while (gen) {
     gen();
@@ -102,7 +102,7 @@ template <typename T> size_t count(generator<T> &gen) {
  *  \returns The final accumulator value.
  */
 template <typename TOut, typename TIn, typename Fun>
-TOut fold(generator<TIn> &gen, Fun folder) {
+TOut fold(generator<TIn> gen, Fun folder) {
   TOut value = {};
   while (gen) {
     value = folder(value, gen());
@@ -129,7 +129,7 @@ TOut fold(generator<TIn> &gen, Fun folder) {
  *  \returns The final accumulator value.
  */
 template <typename TOut, typename TIn, typename Fun>
-TOut fold(generator<TIn> &gen, Fun folder, TOut initial) {
+TOut fold(generator<TIn> gen, Fun folder, TOut initial) {
   TOut value(initial);
   while (gen) {
     value = folder(value, gen());
@@ -157,7 +157,7 @@ TOut fold(generator<TIn> &gen, Fun folder, TOut initial) {
  * now the output value.
  */
 template <typename TOut, typename TIn, typename Fun>
-TOut &fold_ref(generator<TIn> &gen, Fun folder, TOut &initial) {
+TOut &fold_ref(generator<TIn> gen, Fun folder, TOut &initial) {
   while (gen) {
     initial = folder(initial, gen());
   }
@@ -175,7 +175,7 @@ TOut &fold_ref(generator<TIn> &gen, Fun folder, TOut &initial) {
  *  \param[in,out] gen The generator to sum over.
  *  \returns The sum of all elements.
  */
-template <typename T> T sum(generator<T> &gen) {
+template <typename T> T sum(generator<T> gen) {
   T accum = {};
   while (gen) {
     accum = accum + gen();
@@ -195,7 +195,7 @@ template <typename T> T sum(generator<T> &gen) {
  *  \param[in,out] gen The generator to iterate over.
  *  \param[in] func The function to use.
  */
-template <typename T, typename Fun> void foreach (generator<T> &gen, Fun func) {
+template <typename T, typename Fun> void foreach (generator<T> gen, Fun func) {
   while (gen) {
     func(gen());
   }

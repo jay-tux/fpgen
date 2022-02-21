@@ -1,6 +1,6 @@
 # fpgen
 *Functional programming in C++ using C++20 coroutines*  
-![](https://img.shields.io/badge/test_coverage-98%25-brightgreen)
+![](https://img.shields.io/badge/test_coverage-97%25-brightgreen)
 
 
 ## Aim
@@ -17,14 +17,9 @@ Currently supported features:
    - Lazy `map`ping over generators.
    - Lazy `zip`ping of generators.
    - Lazy `filter`ing of generators.
-
-Planned/In progress features:
  - Commonly used aggregators:
    - Lazy `fold`ing of generators.
    - Lazy `sum`ming of generators.
- - Ergonomic improvements:
-   - Enable streaming `<<` of generators.
-   - Simple structure which allows generator construction, manipulation and aggregation using member functions.
 
 Got another idea? Drop a feature request on the repo.
 
