@@ -1,6 +1,6 @@
 SOURCES=$(shell find $(SRCD) -name '*.cpp')
 DEPS=$(SOURCES:$(SRCD)/%.cpp=$(OBJD)/%.d)
-TESTS=generator sources manip aggreg stream chain
+TESTS=generator sources manip aggreg chain
 TESTOBJ=$(TESTS:%=$(OBJD)/test_%.o)
 
 CONAN_PKG_OVERRIDE=gtest

@@ -2,7 +2,9 @@
 #define _FPGEN_SOURCES
 
 #include "generator.hpp"
+#include <istream>
 #include <iterator>
+#include <type_traits>
 
 /**
  *  \brief The namespace containing all of fpgen's code.
@@ -101,6 +103,49 @@ template <typename T> generator<T> inc(T start) {
     co_yield value;
     ++value;
   }
+}
+
+/**
+ *  \brief Creates a generator from an input stream.
+ *
+ *  The generator will apply the given function on the stream each time the
+ * generator is invoked. The function should return a value of the type you want
+ * in the generator. Once the stream fails (`!stream.good()`) or the stream
+ * reaches EOF, the generator stops. Trailing whitespace may result in
+ * unpredictable behaviour. Since the stream isn't copied, using the generator
+ * after the stream goes out of scope is undefined behaviour.
+ *
+ *  \tparam Fun The type of the function. Should have the signature
+ * (std::istream &) -> T.
+ *  \param[in,out] stream The input stream.
+ *  \param[in] func The function to extract data from the stream.
+ *  \returns A new generator which will iterate over the given stream, each time
+ * applying the given function to retrieve the next value.
+ */
+template <typename Fun>
+generator<typename std::invoke_result<Fun, std::istream &>::type>
+from_stream(std::istream &stream, Fun func) {
+  while (stream.good() && !stream.eof()) {
+    co_yield func(stream);
+  }
+  co_return;
+}
+
+/**
+ *  \brief Creates a generator supplying each line from a file.
+ *
+ *  This generator is formed by combining `fpgen::from_stream<>` with
+ * `std::getline` on the stream.
+ *
+ *  \param[in,out] stream The stream to extract lines from.
+ *  \returns A new generator which yields each line in the stream.
+ */
+inline generator<std::string> from_lines(std::istream &stream) {
+  return from_stream(stream, [](std::istream &stream) {
+    std::string value;
+    std::getline(stream, value);
+    return value;
+  });
 }
 
 } // namespace fpgen
