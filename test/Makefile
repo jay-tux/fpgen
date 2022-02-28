@@ -33,4 +33,4 @@ clean:
 	find ./obj/ -type f | grep -v '.gitkeep' | xargs rm -rf
 	find ./conan/ -type f | grep -v '.gitkeep' | xargs rm -rf
 
-.PHONY: all dirs clean $(TESTS:%=$(BIND)/%)
+.PHONY: all dirs clean $(TESTS:%=$(BIND)/%) $(BIND)/_test

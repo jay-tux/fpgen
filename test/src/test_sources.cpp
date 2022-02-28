@@ -102,7 +102,7 @@ TEST_CASE("Generator from std::istream") {
   }
 
   bool genstate = gen;
-  CHECK(genstate);
+  CHECK(!genstate);
 }
 
 TEST_CASE("Generator from std::istream, by lines") {
