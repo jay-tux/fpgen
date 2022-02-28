@@ -3,7 +3,7 @@ DEPS=$(SOURCES:$(SRCD)/%.cpp=$(OBJD)/%.d)
 TESTS=generator sources manip aggreg chain
 TESTOBJ=$(TESTS:%=$(OBJD)/test_%.o)
 
-CONAN_PKG_OVERRIDE=gtest
+CONAN_PKG_OVERRIDE=
 CONAN_MODIFY=$(CONAN_PKG_OVERRIDE:%=-s %:compiler.version=11.2)
 
 all: dirs conan/conanbuildinfo.mak $(BIND)/_test
@@ -18,7 +18,7 @@ dirs:
 	@([ ! -d $(OBJD)/sources ] && mkdir -p $(OBJD)/sources) || true
 
 $(BIND)/_test: $(TESTOBJ) $(OBJD)/test_main.o
-	$(CC) $(LDXTRA) $(LDARGS) $^ -o $@
+	$(CC) $(LDARGS) $(LDXTRA) $^ -o $@
 	$(BIND)/_test
 
 $(OBJD)/%.o: $(SRCD)/%.cpp Makefile
@@ -26,11 +26,11 @@ $(OBJD)/%.o: $(SRCD)/%.cpp Makefile
 
 conan/conanbuildinfo.mak: conanfile.txt
 	@([ ! -d conan/ ] && mkdir -p conan/) || true
-	cd conan && CC=gcc CXX=$(CC) conan install .. $(CONAN_MODIFY) --build=gtest
+	cd conan && CC=gcc CXX=$(CC) conan install .. $(CONAN_MODIFY)
 
 clean:
 	find ./bin/ -type f | grep -v '.gitkeep' | xargs rm -rf
 	find ./obj/ -type f | grep -v '.gitkeep' | xargs rm -rf
 	find ./conan/ -type f | grep -v '.gitkeep' | xargs rm -rf
 
-.PHONY: all dirs clean $(TESTS:%=$(BIND)/%)
+.PHONY: all dirs clean $(TESTS:%=$(BIND)/%) $(BIND)/_test

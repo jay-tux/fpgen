@@ -1,66 +1,66 @@
+#include "doctest/doctest.h"
 #include "generator.hpp"
 #include "sources.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
 
-TEST(sources, from_vector) {
+TEST_CASE("Generator from std::vector") {
   std::vector<int> values = {0, 5, 1, 4, 2, 3};
   size_t idx = 0;
   for (auto v : fpgen::from(values)) {
-    EXPECT_EQ(values[idx], v);
+    CHECK(values[idx] == v);
     idx++;
   }
 }
 
-TEST(sources, from_set) {
+TEST_CASE("Generator from std::set") {
   std::set<std::string> srcs = {"key 1", "key 2", "key 3", "something"};
   std::set<std::string> todo = {"key 1", "key 2", "key 3", "something"};
 
   for (auto v : fpgen::from(srcs)) {
-    EXPECT_NE(todo.find(v), todo.end());
+    CHECK(todo.find(v) != todo.end());
     todo.erase(v);
   }
-  EXPECT_TRUE(todo.empty());
+  CHECK(todo.empty());
 }
 
-TEST(sources, enumerate_vector) {
+TEST_CASE("Generator from enumerate over std::vector") {
   std::vector<char> values = {'a', 'c', 'e', 'k', 'j', 't'};
   size_t prev = 0;
   for (auto v : fpgen::enumerate(values)) {
-    EXPECT_EQ(std::get<0>(v), prev);
-    EXPECT_EQ(values[prev], std::get<1>(v));
+    CHECK(std::get<0>(v) == prev);
+    CHECK(values[prev] == std::get<1>(v));
     prev++;
   }
 }
 
-TEST(sources, from_map_tup) {
+TEST_CASE("Generator from std::map") {
   std::map<std::string, std::string> map = {{"key 1", "value 1"},
                                             {"key 2", "value 2"},
                                             {"key 3", "value 3"},
                                             {"something", "else"}};
   std::set<std::string> todo = {"key 1", "key 2", "key 3", "something"};
   for (auto v : fpgen::from_tup(map)) {
-    EXPECT_NE(todo.find(std::get<0>(v)), todo.end());
-    EXPECT_EQ(map[std::get<0>(v)], std::get<1>(v));
+    CHECK(todo.find(std::get<0>(v)) != todo.end());
+    CHECK(map[std::get<0>(v)] == std::get<1>(v));
     todo.erase(std::get<0>(v));
   }
-  EXPECT_TRUE(todo.empty());
+  CHECK(todo.empty());
 }
 
-TEST(sources, incrementable) {
+TEST_CASE("Incrementable generator (int)") {
   auto gen = fpgen::inc<int>(0);
   for (int i = 0; i < 25; i++) {
-    EXPECT_EQ(gen(), i);
+    CHECK(gen() == i);
   }
 }
 
-TEST(sources, incrementable_struct) {
+TEST_CASE("Incrementable generator (struct)") {
   struct inc_struct {
     int value;
     inline inc_struct operator++() {
@@ -77,11 +77,11 @@ TEST(sources, incrementable_struct) {
 
   auto gen = fpgen::inc<inc_struct>(v1);
   for (int i = 0; i < 25; i++) {
-    EXPECT_EQ(gen().value, i);
+    CHECK(gen().value == i);
   }
 }
 
-TEST(sources, instream) {
+TEST_CASE("Generator from std::istream") {
   std::vector<int> numbers = {1, 2, 3, 4, 5};
   std::stringstream str;
   for (auto v : numbers)
@@ -95,17 +95,17 @@ TEST(sources, instream) {
   auto gen = fpgen::from_stream(str, func);
   for (int i = 0; i < 5; i++) {
     bool genstate = gen;
-    EXPECT_TRUE(genstate);
+    CHECK(genstate);
     auto tmp = gen();
-    EXPECT_EQ(tmp, numbers[i]);
+    CHECK(tmp == numbers[i]);
     std::cout << i << "," << tmp << std::endl;
   }
 
   bool genstate = gen;
-  EXPECT_FALSE(genstate);
+  CHECK(!genstate);
 }
 
-TEST(sources, lipsum_lines) {
+TEST_CASE("Generator from std::istream, by lines") {
   std::string lipsum = R"(
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque diam magna,
 laoreet non dictum eget, scelerisque eu nibh. Cras luctus purus sit amet
@@ -141,13 +141,13 @@ Etiam vel porta augue. Maecenas volutpat odio in lacus sagittis fermentum.
   std::stringstream strm;
   strm << lipsum;
   auto gen = fpgen::from_lines(strm);
-  EXPECT_EQ("", gen());
+  CHECK("" == gen());
   for (size_t i = 0; i < 10; i++) {
     bool gens = gen;
-    EXPECT_TRUE(gens);
-    EXPECT_EQ(gen(), lines[i]);
+    CHECK(gens);
+    CHECK(gen() == lines[i]);
   }
-  EXPECT_EQ(gen(), "");
+  CHECK(gen() == "");
   bool gens = gen;
-  EXPECT_FALSE(gens);
+  CHECK(!gens);
 }

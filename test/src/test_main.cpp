@@ -1,3 +1,3 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 #include "generator.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"

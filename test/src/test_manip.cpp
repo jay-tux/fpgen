@@ -1,8 +1,7 @@
+#include "doctest/doctest.h"
 #include "generator.hpp"
 #include "manipulators.hpp"
 #include "sources.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 
 #include <map>
 #include <set>
@@ -31,61 +30,52 @@ size_t mapper(size_t v) { return v * v; }
 bool is_even(size_t v) { return (v % 2 == 0); }
 bool over_100(size_t v) { return (v > 100); }
 
-TEST(manipulators, map_empty) {
+TEST_CASE("Map over empty generator") {
   auto gen = manip_empty();
-  // gen();
 
   for (auto v : fpgen::map(gen, mapper)) {
-    FAIL() << "Should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, map) {
+TEST_CASE("Map over a non-empty generator") {
   auto gen = manip();
   size_t i = 1;
   for (auto v : fpgen::map(gen, mapper)) {
-    EXPECT_EQ(i * i, v);
-    EXPECT_TRUE(i <= 1024);
+    CHECK(i * i == v);
+    CHECK(i <= 1024);
     i *= 2;
   }
 }
 
-TEST(manipulators, zip_both_empty) {
+TEST_CASE("Zip over two empty generator") {
   auto gen = manip_empty();
   auto gen2 = manip_empty();
-  // gen();
-  // gen2();
 
   for (auto v : fpgen::zip(gen, gen2)) {
-    FAIL() << "Should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, zip_first_empty) {
+TEST_CASE("Zip, first generator is empty") {
   auto gen = manip_empty();
   auto gen2 = fpgen::inc((size_t)0);
-  // gen();
 
   for (auto v : fpgen::zip(gen, gen2)) {
-    FAIL() << "Should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, zip_second_empty) {
+TEST_CASE("Zip, second generator is empty") {
   auto gen = fpgen::inc((size_t)0);
   auto gen2 = manip_empty();
-  // gen2();
 
   for (auto v : fpgen::zip(gen, gen2)) {
-    FAIL() << "Should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, zip_none_empty) {
+TEST_CASE("Zip, both generators are non-empty") {
   auto gen = fpgen::inc((size_t)0);
   auto gen2 = manip();
 
@@ -93,132 +83,124 @@ TEST(manipulators, zip_none_empty) {
   size_t j = 1;
 
   for (auto v : fpgen::zip(gen, gen2)) {
-    EXPECT_EQ(std::get<0>(v), i);
-    EXPECT_EQ(std::get<1>(v), j);
-    EXPECT_TRUE(j <= 1024);
-    EXPECT_TRUE(i <= 10);
+    CHECK(std::get<0>(v) == i);
+    CHECK(std::get<1>(v) == j);
+    CHECK(j <= 1024);
+    CHECK(i <= 10);
 
     i++;
     j *= 2;
   }
 }
 
-TEST(manipulators, filter_empty) {
+TEST_CASE("Filter an empty generator") {
   auto gen = manip_empty();
-  // gen();
 
   size_t i = 0;
 
   for (auto v : fpgen::filter(gen, is_even)) {
-    FAIL();
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, filter_to_empty) {
+TEST_CASE("Filter to an empty generator") {
   auto gen = until12();
 
   for (auto v : fpgen::filter(gen, over_100)) {
-    FAIL();
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, filter_normal) {
+TEST_CASE("Filter a generator") {
   auto gen = until12();
   size_t i = 0;
   for (auto v : fpgen::filter(gen, is_even)) {
-    EXPECT_EQ(v, i);
-    EXPECT_TRUE(i <= 12);
+    CHECK(v == i);
+    CHECK(i <= 12);
     i += 2;
   }
 }
 
-TEST(manipulators, drop_empty) {
+TEST_CASE("Drop from an empty generator") {
   auto gen = drop(manip_empty(), 5);
   for (auto v : gen) {
-    FAIL() << "should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, drop_normal) {
+TEST_CASE("Drop from a generator") {
   auto gen = drop(until12(), 5);
   size_t exp = 5;
   for (auto v : gen) {
-    EXPECT_EQ(v, exp);
-    EXPECT_TRUE(exp <= 12);
+    CHECK(v == exp);
+    CHECK(exp <= 12);
     exp++;
   }
-  EXPECT_EQ(exp, 13);
+  CHECK(exp == 13);
 }
 
-TEST(manipulators, take_empty) {
+TEST_CASE("Take from an empty generator") {
   auto gen = take(manip_empty(), 4);
   for (auto v : gen) {
-    FAIL() << "should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, take_normal) {
+TEST_CASE("Take from a generator") {
   auto gen = take(fpgen::inc((size_t)0), 8);
   size_t exp = 0;
   for (auto v : gen) {
-    EXPECT_EQ(v, exp);
-    EXPECT_TRUE(exp <= 8);
+    CHECK(v == exp);
+    CHECK(exp <= 8);
     exp++;
   }
-  EXPECT_EQ(exp, 8);
+  CHECK(exp == 8);
 }
 
-TEST(manipulators, drop_take) {
+TEST_CASE("Drop & take from generator") {
   auto gen = take(drop(fpgen::inc((size_t)0), 4), 9);
   for (size_t exp = 4; exp < 13; exp++) {
-    EXPECT_TRUE(static_cast<bool>(gen));
-    EXPECT_EQ(exp, gen());
+    CHECK(static_cast<bool>(gen));
+    CHECK(exp == gen());
   }
 
   for (auto v : gen) {
-    FAIL() << "should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, drop_while_empty) {
+TEST_CASE("Dropwhile over an empty generator") {
   auto gen = drop_while(manip_empty(), [](size_t v) { return v > 3; });
   for (auto v : gen) {
-    FAIL() << "should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, drop_while_normal) {
+TEST_CASE("Dropwhile over a generator") {
   auto gen = drop_while(until12(), [](size_t v) { return v < 5; });
   size_t exp = 5;
   for (auto v : gen) {
-    EXPECT_EQ(v, exp);
-    EXPECT_TRUE(exp <= 12);
+    CHECK(v == exp);
+    CHECK(exp <= 12);
     exp++;
   }
-  EXPECT_EQ(exp, 13);
+  CHECK(exp == 13);
 }
 
-TEST(manipulators, take_while_empty) {
+TEST_CASE("Takewile over an empty generator") {
   auto gen = take_while(manip_empty(), [](size_t v) { return v < 4; });
   for (auto v : gen) {
-    FAIL() << "should not return a value";
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(manipulators, take_while_normal) {
+TEST_CASE("Takewhile over a generator") {
   auto gen = take_while(fpgen::inc((size_t)0), [](size_t v) { return v < 8; });
   size_t exp = 0;
   for (auto v : gen) {
-    EXPECT_EQ(v, exp);
-    EXPECT_TRUE(exp <= 8);
+    CHECK(v == exp);
+    CHECK(exp <= 8);
     exp++;
   }
-  EXPECT_EQ(exp, 8);
+  CHECK(exp == 8);
 }

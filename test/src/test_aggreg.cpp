@@ -1,9 +1,8 @@
 #include "aggregators.hpp"
+#include "doctest/doctest.h"
 #include "generator.hpp"
 #include "manipulators.hpp"
 #include "sources.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 
 #include <map>
 #include <sstream>
@@ -46,149 +45,143 @@ size_t sum_ref(size_t &old, size_t in) {
   return old;
 }
 
-TEST(aggregate, empty) {
+TEST_CASE("Aggregate empty generator") {
   auto gen = a_empty();
-  // gen();
   std::vector<size_t> res;
-  EXPECT_EQ(0, fpgen::aggregate_to(gen, res).size());
+  CHECK(0 == fpgen::aggregate_to(gen, res).size());
 }
 
-TEST(aggregate, vector) {
+TEST_CASE("Aggregate to std::vector") {
   auto gen = values();
   std::vector<size_t> res;
   fpgen::aggregate_to(gen, res);
 
-  EXPECT_EQ(0, res[0]);
-  EXPECT_EQ(1, res[1]);
-  EXPECT_EQ(1, res[2]);
-  EXPECT_EQ(2, res[3]);
-  EXPECT_EQ(3, res[4]);
-  EXPECT_EQ(5, res[5]);
-  EXPECT_EQ(8, res[6]);
-  EXPECT_EQ(13, res[7]);
-  EXPECT_EQ(21, res[8]);
-  EXPECT_EQ(34, res[9]);
-  EXPECT_EQ(res.size(), 10);
+  CHECK(0 == res[0]);
+  CHECK(1 == res[1]);
+  CHECK(1 == res[2]);
+  CHECK(2 == res[3]);
+  CHECK(3 == res[4]);
+  CHECK(5 == res[5]);
+  CHECK(8 == res[6]);
+  CHECK(13 == res[7]);
+  CHECK(21 == res[8]);
+  CHECK(34 == res[9]);
+  CHECK(res.size() == 10);
 }
 
-TEST(aggregate, vec_to_vec) {
+TEST_CASE("Aggregate: std::vector to generator to std::vector") {
   std::vector<size_t> in = {0, 1, 2, 3, 4, 5, 6};
   std::vector<size_t> out = {};
   auto gen = fpgen::from(in);
   out = fpgen::aggregate_to(gen, out);
-  EXPECT_EQ(in, out);
+  CHECK(in == out);
 }
 
-TEST(aggregate, map) {
+TEST_CASE("Aggregate to std::map") {
   fpgen::generator<size_t> sources[2] = {values(), values()};
   auto gen = fpgen::zip(sources[0], sources[1]);
   std::map<size_t, size_t> res;
   fpgen::tup_aggregate_to(gen, res);
 
-  EXPECT_EQ(0, res[0]);
-  EXPECT_EQ(1, res[1]);
-  EXPECT_EQ(2, res[2]);
-  EXPECT_EQ(3, res[3]);
-  EXPECT_EQ(5, res[5]);
-  EXPECT_EQ(8, res[8]);
-  EXPECT_EQ(13, res[13]);
-  EXPECT_EQ(21, res[21]);
-  EXPECT_EQ(34, res[34]);
-  EXPECT_EQ(res.size(), 9);
+  CHECK(0 == res[0]);
+  CHECK(1 == res[1]);
+  CHECK(2 == res[2]);
+  CHECK(3 == res[3]);
+  CHECK(5 == res[5]);
+  CHECK(8 == res[8]);
+  CHECK(13 == res[13]);
+  CHECK(21 == res[21]);
+  CHECK(34 == res[34]);
+  CHECK(res.size() == 9);
 }
 
-TEST(aggregate, count_empty) {
+TEST_CASE("Count empty generator") {
   auto gen = a_empty();
-  // gen();
-  EXPECT_EQ(0, fpgen::count(gen));
+  CHECK(0 == fpgen::count(gen));
 }
 
-TEST(aggregate, count) {
+TEST_CASE("Count generator") {
   auto gen = values();
-  EXPECT_EQ(10, fpgen::count(gen));
+  CHECK(10 == fpgen::count(gen));
 }
 
-TEST(fold, fold_noin_empty) {
+TEST_CASE("Fold [using no-input, empty generator]") {
   auto gen = a_empty();
-  // gen();
-  EXPECT_EQ(0, fpgen::fold<size_t>(gen, sum));
+  CHECK(0 == fpgen::fold<size_t>(gen, sum));
 }
 
-TEST(fold, fold_noin) {
+TEST_CASE("Fold [using no-input, non-empty generator]") {
   auto gen = values();
-  EXPECT_EQ(calc_sum(), fpgen::fold<size_t>(gen, sum));
+  CHECK(calc_sum() == fpgen::fold<size_t>(gen, sum));
 }
 
-TEST(fold, fold_in_noref_empty) {
+TEST_CASE("Fold [using input, empty generator]") {
   auto gen = a_empty();
-  // gen();
-  EXPECT_EQ(7, fpgen::fold<size_t>(gen, sum, 7));
+  CHECK(7 == fpgen::fold<size_t>(gen, sum, 7));
 }
 
-TEST(fold, fold_in_noref) {
+TEST_CASE("Fold [using input, non-empty generator]") {
   auto gen = values();
-  EXPECT_EQ(calc_sum() + 7, fpgen::fold<size_t>(gen, sum, 7));
+  CHECK(calc_sum() + 7 == fpgen::fold<size_t>(gen, sum, 7));
 }
 
-TEST(fold, fold_in_ref_empty) {
+TEST_CASE("Fold [using ref input, empty generator]") {
   auto gen = a_empty();
-  // gen();
   size_t res = 7;
-  EXPECT_EQ(7, fpgen::fold_ref<size_t>(gen, sum, res));
-  EXPECT_EQ(7, res);
+  CHECK(7 == fpgen::fold_ref<size_t>(gen, sum, res));
+  CHECK(7 == res);
 }
 
-TEST(fold, fold_in_ref) {
+TEST_CASE("Fold [using ref input, non-epty generator]") {
   auto gen = values();
   size_t res = 7;
-  EXPECT_EQ(calc_sum() + 7, fpgen::fold_ref<size_t>(gen, sum, res));
-  EXPECT_EQ(calc_sum() + 7, res);
+  CHECK(calc_sum() + 7 == fpgen::fold_ref<size_t>(gen, sum, res));
+  CHECK(calc_sum() + 7 == res);
 }
 
-TEST(sum, empty) {
+TEST_CASE("Sum empty generator") {
   auto gen = a_empty();
-  // gen();
-  EXPECT_EQ(0, fpgen::sum(gen));
+  CHECK(0 == fpgen::sum(gen));
 }
 
-TEST(sum, normal) {
+TEST_CASE("Sum over generator") {
   auto gen = values();
-  EXPECT_EQ(calc_sum(), fpgen::sum(gen));
+  CHECK(calc_sum() == fpgen::sum(gen));
 }
 
-TEST(foreach, empty) {
+TEST_CASE("Foreach over empty generator") {
   auto gen = a_empty();
   // gen();
   size_t res = 0;
   fpgen::foreach (gen, [&res](size_t val) { res += val; });
-  EXPECT_EQ(res, 0);
+  CHECK(res == 0);
 }
 
-TEST(foreach, normal) {
+TEST_CASE("Foreach over non-empty generator") {
   auto gen = values();
   auto gen2 = values();
   size_t res = 0;
   fpgen::foreach (gen, [&res](size_t val) { res += val; });
-  EXPECT_EQ(res, fpgen::sum(gen2));
+  CHECK(res == fpgen::sum(gen2));
 }
 
-TEST(stream, nosep) {
+TEST_CASE("Output to stream, no separator") {
   std::vector<int> vals = {1, 2, 3, 4, 5, 6};
   auto gen = fpgen::from(vals);
   std::stringstream strm;
   fpgen::to_stream(gen, strm);
-  EXPECT_EQ(strm.str(), "123456");
+  CHECK(strm.str() == "123456");
 }
 
-TEST(stream, sep) {
+TEST_CASE("Output to stream, with separator") {
   std::vector<int> vals = {1, 2, 3, 4, 5, 6, 7};
   auto gen = fpgen::from(vals);
   std::stringstream strm;
   fpgen::to_stream(gen, strm, " ");
-  EXPECT_EQ(strm.str(), "1 2 3 4 5 6 7");
+  CHECK(strm.str() == "1 2 3 4 5 6 7");
 }
 
-TEST(stream, lines_trail) {
+TEST_CASE("Output to stream (by lines), with trailing line") {
   std::vector<int> vals = {1, 2, 3, 4};
   auto gen = fpgen::from(vals);
   std::stringstream strm;
@@ -196,15 +189,15 @@ TEST(stream, lines_trail) {
   for (auto v : vals)
     expect << v << std::endl;
   fpgen::to_lines(gen, strm);
-  EXPECT_EQ(strm.str(), expect.str());
+  CHECK(strm.str() == expect.str());
 }
 
-TEST(stream, lines_no_trail) {
+TEST_CASE("Output to stream (by lines), without trailing line") {
   std::vector<int> vals = {1, 2, 3, 4};
   auto gen = fpgen::from(vals);
   std::stringstream strm;
   std::stringstream expect;
   expect << 1 << std::endl << 2 << std::endl << 3 << std::endl << 4;
   fpgen::to_lines_no_trail(gen, strm);
-  EXPECT_EQ(strm.str(), expect.str());
+  CHECK(strm.str() == expect.str());
 }

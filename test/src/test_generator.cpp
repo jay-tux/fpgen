@@ -1,6 +1,5 @@
+#include "doctest/doctest.h"
 #include "generator.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 #include <iostream>
 
 fpgen::generator<float> empty() { co_return; }
@@ -20,46 +19,43 @@ fpgen::generator<long> finite_squares(int min, int max) {
   co_return; // max *max;
 }
 
-TEST(generator, accept_empty_gen) {
-  auto emptygen = empty();
-  SUCCEED();
-}
+TEST_CASE("Generator accepts empty generator") { auto emptygen = empty(); }
 
-TEST(generator, iterator_empty_gen) {
+TEST_CASE("Iterator over an empty generator") {
   auto gen = empty();
-  // gen();
   for (auto v : gen) {
-    FAIL();
+    CHECK(false); // should fail
   }
-  SUCCEED();
 }
 
-TEST(generator, can_call_and_continue) {
+TEST_CASE("Call-and-continue for a generator") {
   auto intgen = infinite();
   int value = intgen();
-  EXPECT_EQ(0, value);
+  CHECK(0 == value);
   value = intgen();
-  EXPECT_EQ(1, value);
+  CHECK(1 == value);
 }
 
-TEST(generator, can_while_over) {
+TEST_CASE("Use while over a generator") {
   int value;
   int expect = 0;
   auto intgen2 = finite_squares(0, 12);
   while (intgen2) {
     value = intgen2();
-    EXPECT_THAT(expect, testing::AllOf(testing::Le(12), testing::Ge(0)));
-    EXPECT_EQ(expect * expect, value);
+    CHECK(expect <= 12);
+    CHECK(expect >= 0);
+    CHECK(expect * expect == value);
     expect++;
   }
 }
 
-TEST(generator, iterator) {
+TEST_CASE("Iterate over a generator") {
   int expect = -4;
   auto intgen3 = finite_squares(-4, 8);
   for (auto value : intgen3) {
-    EXPECT_THAT(expect, testing::AllOf(testing::Le(8), testing::Ge(-4)));
-    EXPECT_EQ(expect * expect, value);
+    CHECK(expect <= 8);
+    CHECK(expect >= -4);
+    CHECK(expect * expect == value);
     expect++;
   }
 }
