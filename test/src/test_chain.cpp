@@ -1,9 +1,8 @@
 #include "aggregators.hpp"
+#include "doctest/doctest.h"
 #include "generator.hpp"
 #include "manipulators.hpp"
 #include "sources.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 
 using namespace fpgen;
 
@@ -12,7 +11,7 @@ std::ostream &operator<<(std::ostream &in, std::tuple<T1, T2> &other) {
   return in << "{ " << std::get<0>(other) << ", " << std::get<1>(other) << " }";
 }
 
-TEST(chain, simple_chain) {
+TEST_CASE("Simple chain check") {
   /*
   Chain:
   -> [0..] -> [5..] -> [5..13] -> [15...169]  \
@@ -27,10 +26,10 @@ TEST(chain, simple_chain) {
 
   size_t value = 5;
   for (auto v : zip(gen, second)) {
-    EXPECT_EQ(value * value, std::get<0>(v));
-    EXPECT_EQ('a' + 2 + value, std::get<1>(v));
-    EXPECT_TRUE(value <= 13);
+    CHECK(value * value == std::get<0>(v));
+    CHECK('a' + 2 + value == std::get<1>(v));
+    CHECK(value <= 13);
     value++;
   }
-  EXPECT_EQ(value, 14);
+  CHECK(value == 14);
 }

@@ -5,6 +5,5 @@
 #include "generator.hpp"
 #include "manipulators.hpp"
 #include "sources.hpp"
-#include "stream.hpp"
 
 #endif

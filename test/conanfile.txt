@@ -1,5 +1,5 @@
 [requires]
-gtest/cci.20210126 
+ doctest/2.4.8
 
 [generators]
 make
