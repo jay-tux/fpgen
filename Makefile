@@ -63,7 +63,7 @@ clean:
 
 coverage:
 	make CC="$(CC)" OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)" CXXARGS="$(CXXARGS) $(EXTRA_CXX) -I$(INCL_PATH)" LDARGS="$(LDARGS) $(EXTRA_LD)" -C $(TEST_DIR)/..
-	lcov --directory "$(BUILD_DIR)" --output-file coverage.info -c --exclude '*gmock' --exclude '*gtest*' --exclude '/usr/*'
+	lcov --directory "$(BUILD_DIR)" --output-file coverage.info -c --exclude '*gmock' --exclude '*doctest*' --exclude '/usr/*'
 	genhtml coverage.info --output-directory "$(HTMLDIR)"
 	$(BROWSER) $(HTMLDIR)/index.html
 
