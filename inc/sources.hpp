@@ -2,6 +2,7 @@
 #define _FPGEN_SOURCES
 
 #include "generator.hpp"
+#include "type_traits.hpp"
 #include <istream>
 #include <iterator>
 #include <type_traits>
@@ -117,14 +118,16 @@ template <typename T> generator<T> inc(T start) {
  *
  *  \tparam Fun The type of the function. Should have the signature
  * (std::istream &) -> T.
+ *  \tparam TOut The output type. This type is deduced from the `Fun` type
+ * parameter.
  *  \param[in,out] stream The input stream.
  *  \param[in] func The function to extract data from the stream.
  *  \returns A new generator which will iterate over the given stream, each time
  * applying the given function to retrieve the next value.
  */
-template <typename Fun>
-generator<typename std::invoke_result<Fun, std::istream &>::type>
-from_stream(std::istream &stream, Fun func) {
+template <typename Fun, typename TOut = type::output_type<Fun, std::istream &>,
+          typename _ = type::is_function_to<Fun, TOut, std::istream &>>
+generator<TOut> from_stream(std::istream &stream, Fun func) {
   while (stream.good() && !stream.eof()) {
     co_yield func(stream);
   }

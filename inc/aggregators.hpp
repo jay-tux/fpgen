@@ -2,6 +2,7 @@
 #define _FPGEN_AGGREGATORS
 
 #include "generator.hpp"
+#include "type_traits.hpp"
 #include <forward_list>
 #include <ostream>
 #include <tuple>
@@ -102,7 +103,8 @@ template <typename T> size_t count(generator<T> gen) {
  *  \param[in] folder The folding function.
  *  \returns The final accumulator value.
  */
-template <typename TOut, typename TIn, typename Fun>
+template <typename TOut, typename TIn, typename Fun,
+          typename _ = type::is_function_to<Fun, TOut, TOut, TIn>>
 TOut fold(generator<TIn> gen, Fun folder) {
   TOut value = {};
   while (gen) {
@@ -129,7 +131,8 @@ TOut fold(generator<TIn> gen, Fun folder) {
  *  \param[in] initial The initial value for the accumulator (is copied).
  *  \returns The final accumulator value.
  */
-template <typename TOut, typename TIn, typename Fun>
+template <typename TOut, typename TIn, typename Fun,
+          typename _ = type::is_function_to<Fun, TOut, TOut, TIn>>
 TOut fold(generator<TIn> gen, Fun folder, TOut initial) {
   TOut value(initial);
   while (gen) {
@@ -157,7 +160,8 @@ TOut fold(generator<TIn> gen, Fun folder, TOut initial) {
  *  \returns A reference to the value which was passed as initial value and is
  * now the output value.
  */
-template <typename TOut, typename TIn, typename Fun>
+template <typename TOut, typename TIn, typename Fun,
+          typename _ = type::is_function_to<Fun, TOut, TOut, TIn>>
 TOut &fold_ref(generator<TIn> gen, Fun folder, TOut &initial) {
   while (gen) {
     initial = folder(initial, gen());
@@ -196,7 +200,9 @@ template <typename T> T sum(generator<T> gen) {
  *  \param[in,out] gen The generator to iterate over.
  *  \param[in] func The function to use.
  */
-template <typename T, typename Fun> void foreach (generator<T> gen, Fun func) {
+template <typename T, typename Fun,
+          typename _ = type::is_function_to<Fun, void, T>>
+void foreach (generator<T> gen, Fun func) {
   while (gen) {
     func(gen());
   }

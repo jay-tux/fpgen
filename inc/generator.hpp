@@ -11,6 +11,7 @@ using namespace experimental;
 #endif
 
 #include "__helpers.hpp"
+#include "type_traits.hpp"
 #include <exception>
 
 /**
@@ -33,11 +34,7 @@ namespace fpgen {
  */
 template <std::copyable T> class generator {
 #else
-template <typename T>
-using enabler =
-    typename std::enable_if<std::is_copy_assignable<T>::value, bool>::type;
-
-template <typename T, enabler<T> = true> class generator {
+template <typename T, typename _ = type::is_generator_type<T>> class generator {
 #endif
 public:
   /**
