@@ -5,6 +5,9 @@ test/conan/*
 cov/*
 
 !**/.gitkeep
+!docs/doxygen.css
+!docs/doxygen_footer.html
+!docs/doxygen_header.html
 
 compile_flags.txt
 coverage.info
