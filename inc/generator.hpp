@@ -10,7 +10,6 @@ using namespace experimental;
 #include <coroutine>
 #endif
 
-#include "__helpers.hpp"
 #include "type_traits.hpp"
 #include <exception>
 
@@ -18,7 +17,6 @@ using namespace experimental;
  *  \brief The namespace containing all of fpgen's code.
  */
 namespace fpgen {
-#if _FPGEN_USE_CONCEPTS
 /**
  *  \brief The main generator type.
  *
@@ -32,10 +30,7 @@ namespace fpgen {
  *  \tparam T The value type for the generator. This should satisfy
  * `std::copyable`, or on (older) CLang versions, `std::is_copy_assignable<T>`.
  */
-template <std::copyable T> class generator {
-#else
 template <typename T, typename _ = type::is_generator_type<T>> class generator {
-#endif
 public:
   /**
    *  \brief The promise type for the generator.
