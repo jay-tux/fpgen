@@ -10,14 +10,13 @@ using namespace experimental;
 #include <coroutine>
 #endif
 
-#include "__helpers.hpp"
+#include "type_traits.hpp"
 #include <exception>
 
 /**
  *  \brief The namespace containing all of fpgen's code.
  */
 namespace fpgen {
-#if _FPGEN_USE_CONCEPTS
 /**
  *  \brief The main generator type.
  *
@@ -31,14 +30,7 @@ namespace fpgen {
  *  \tparam T The value type for the generator. This should satisfy
  * `std::copyable`, or on (older) CLang versions, `std::is_copy_assignable<T>`.
  */
-template <std::copyable T> class generator {
-#else
-template <typename T>
-using enabler =
-    typename std::enable_if<std::is_copy_assignable<T>::value, bool>::type;
-
-template <typename T, enabler<T> = true> class generator {
-#endif
+template <typename T, typename _ = type::is_generator_type<T>> class generator {
 public:
   /**
    *  \brief The promise type for the generator.

@@ -2,6 +2,7 @@
 #define _FPGEN_MANIP
 
 #include "generator.hpp"
+#include "type_traits.hpp"
 #include <array>
 #include <type_traits>
 
@@ -18,13 +19,17 @@ namespace fpgen {
  *
  *  \tparam TIn The type contained in the provided generator.
  *  \tparam Fun The function signature of the mapping function.
+ *  \tparam TOut The output type. This type is deduced from the `Fun` type
+ * parameter.
  *  \param[in,out] gen The generator to map over. Will be in unusable state
  * afterwards.
  *  \param[in] func The function to map with.
  *  \returns A new generator whose contained type is the return type of the
  * mapping function.
  */
-template <typename TIn, typename Fun>
+template <typename TIn, typename Fun,
+          typename TOut = type::output_type<Fun, TIn>,
+          typename _ = type::is_function_to<Fun, TOut, TIn>>
 auto map(generator<TIn> gen, Fun func)
     -> generator<typename std::invoke_result<Fun, TIn>::type> {
   while (gen) {
@@ -69,7 +74,7 @@ generator<std::tuple<T1, T2>> zip(generator<T1> gen1, generator<T2> gen2) {
  *  \returns A new generator which yields all values in the original generator
  * except those not matching the predicate.
  */
-template <typename T, typename Pred>
+template <typename T, typename Pred, typename _ = type::is_predicate<Pred, T>>
 generator<T> filter(generator<T> gen, Pred p) {
   while (gen) {
     T val(gen());
@@ -139,7 +144,7 @@ template <typename T> generator<T> take(generator<T> gen, size_t count) {
  *  \returns A new generator where the first element is guaranteed to not
  * satisfy `p`.
  */
-template <typename T, typename Pred>
+template <typename T, typename Pred, typename _ = type::is_predicate<Pred, T>>
 generator<T> drop_while(generator<T> gen, Pred p) {
   while (gen) {
     T temp = gen();
@@ -172,7 +177,7 @@ generator<T> drop_while(generator<T> gen, Pred p) {
  * predicate and were generated before any element which didn't satisfy the
  * predicate.
  */
-template <typename T, typename Pred>
+template <typename T, typename Pred, typename _ = type::is_predicate<Pred, T>>
 generator<T> take_while(generator<T> gen, Pred p) {
   while (gen) {
     T val = gen();
