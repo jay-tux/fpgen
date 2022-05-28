@@ -1,3 +1,10 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        sources.hpp
+// Purpose:     functions to create fpgen generators from certain sources.
+// Author:      jay-tux
+// Copyright:   (c) 2022 jay-tux
+// Licence:     MPL
+/////////////////////////////////////////////////////////////////////////////
 #ifndef _FPGEN_SOURCES
 #define _FPGEN_SOURCES
 

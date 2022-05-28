@@ -1,3 +1,10 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        aggregators.hpp
+// Purpose:     functions to aggregate results from fpgen generators.
+// Author:      jay-tux
+// Copyright:   (c) 2022 jay-tux
+// Licence:     MPL
+/////////////////////////////////////////////////////////////////////////////
 #ifndef _FPGEN_AGGREGATORS
 #define _FPGEN_AGGREGATORS
 
