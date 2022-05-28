@@ -15,12 +15,13 @@ LDARGS=-fprofile-arcs -ftest-coverage
 
 all:
 	@echo "Please choose a target:"
-	@echo "  -> make install:   installs the headers under $(INSTALL_DIR)"
-	@echo "  -> make uninstall: uninstalls the headers if they are under $(INSTALL_DIR)"
-	@echo "  -> make docs:      generates the documentation using doxygen under $(DOC_DIR)"
-	@echo "  -> make test:      builds and runs the tests in $(BUILD_DIR) and $(BIN_DIR) from $(TEST_DIR)"
-	@echo "  -> make clean:     cleans up test builds and documentation (from $(BUILD_DIR), $(BIN_DIR), $(DOC_DIR))"
-	@echo "  -> make coverage:  builds and runs the tests, then generates a coverage report in $(HTMLDIR) and opens it in $(BROWSER)"
+	@echo "  -> make install:         installs the headers under $(INSTALL_DIR)"
+	@echo "  -> make uninstall:       uninstalls the headers if they are under $(INSTALL_DIR)"
+	@echo "  -> make docs:            generates the documentation using doxygen under $(DOC_DIR)"
+	@echo "  -> make test:            builds and runs the tests in $(BUILD_DIR) and $(BIN_DIR) from $(TEST_DIR)"
+	@echo "  -> make test-clang:      builds and runs the tests in $(BUILD_DIR) and $(BIN_DIR) from $(TEST_DIR) (using clang++)"
+	@echo "  -> make clean:           cleans up test builds and documentation (from $(BUILD_DIR), $(BIN_DIR), $(DOC_DIR))"
+	@echo "  -> make coverage:        builds and runs the tests, then generates a coverage report in $(HTMLDIR) and opens it in $(BROWSER)"
 	@echo ""
 	@echo "Some targets accept additional arguments in the form of KEY=VALUE pairs:"
 	@echo "  -> CC (for test and coverage): sets the command for the C++ compiler (g++ by default)"
@@ -56,6 +57,9 @@ docs:
 
 test:
 	make CC="$(CC)" OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)" CXXARGS="$(CXXARGS) $(EXTRA_CXX) -I$(INCL_PATH)" LDARGS="$(LDARGS) $(EXTRA_LD)" -C $(TEST_DIR)/..
+
+test-clang:
+	make CC="clang++" OBJD="$(BUILD_DIR)" BIND="$(BIN_DIR)" SRCD="$(TEST_DIR)" CXXARGS="$(CXXARGS) $(EXTRA_CXX) -I$(INCL_PATH) -stdlib=libc++" LDARGS="$(LDARGS) $(EXTRA_LD) -stdlib=libc++" -C $(TEST_DIR)/..
 
 clean:
 	rm -rf $(DOC_DIR)/*

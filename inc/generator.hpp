@@ -2,7 +2,6 @@
 #define _FPGEN_GENERATOR
 
 #ifdef __clang__
-// #include <coroutine>
 #include <experimental/coroutine>
 #else
 #include <coroutine>
