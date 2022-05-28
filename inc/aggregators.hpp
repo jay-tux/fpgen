@@ -1,12 +1,13 @@
 #ifndef _FPGEN_AGGREGATORS
 #define _FPGEN_AGGREGATORS
 
-#include "generator.hpp"
-#include "type_traits.hpp"
 #include <forward_list>
 #include <ostream>
 #include <tuple>
 #include <type_traits>
+#include <utility>
+#include "generator.hpp"
+#include "type_traits.hpp"
 
 /**
  *  \brief The namespace containing all of fpgen's code.

@@ -1,10 +1,11 @@
 #ifndef _FPGEN_MANIP
 #define _FPGEN_MANIP
 
-#include "generator.hpp"
-#include "type_traits.hpp"
 #include <array>
 #include <type_traits>
+#include <tuple>
+#include "generator.hpp"
+#include "type_traits.hpp"
 
 /**
  *  \brief The namespace containing all of fpgen's code.
