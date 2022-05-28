@@ -33,8 +33,11 @@ The build system for fpgen is GNU make. The following targets are available:
  `uninstall` | uninstalls the headers
  `docs` | generates the documentation using doxygen
  `test` | builds and runs the tests
+ `test-clang` | builds and runs the tests using `clang++`*
  `clean` | cleans up test builds and documentation
  `coverage` | builds and runs the tests, then generates a coverage report
+
+*: clang requires `-stdlib=libc++` for both compilation and linking.
 
 Some targets provide parameters you can overload:
 
