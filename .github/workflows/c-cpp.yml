@@ -1,0 +1,30 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ root ]
+  pull_request:
+    branches: [ root ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: update
+      if: ${{ env.ACT }}
+      run: sudo apt update && sudo apt install python3 && sudo apt install cmake
+    - name: Install pip3
+      if: ${{ env.ACT }}
+      run: curl https://bootstrap.pypa.io/get-pip.py >get-pip.py && python3 get-pip.py
+    - name: Install Conan
+      id: conan
+      uses: turtlebrowser/get-conan@main
+    - name: Conan version
+      run: echo "${{ steps.conan.outputs.version }}"
+    - uses: actions/checkout@v2
+    - name: make test
+      run: make test
+
+# Note: the steps with `if: ${{ env.ACT }}` are for local setup only.
