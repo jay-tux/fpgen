@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: C/C++ CI (Clang)
 
 on:
   push:
@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: update
+    - name: Update
       if: ${{ env.ACT }}
-      run: sudo apt -y update && sudo apt -y install python3 && sudo apt -y install clang && sudo apt -y install cmake
+      run: sudo apt -y update && sudo apt -y install python3 clang cmake
+    - name: Install libc++
+      run: sudo apt -y install libc++-14-dev libc++abi-14-dev
     - name: Install pip3
       if: ${{ env.ACT }}
       run: curl https://bootstrap.pypa.io/get-pip.py >get-pip.py && python3 get-pip.py
