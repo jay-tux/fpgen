@@ -1,17 +1,22 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        generator.hpp
+// Purpose:     fpgen generator type with iterator.
+// Author:      jay-tux
+// Copyright:   (c) 2022 jay-tux
+// Licence:     MPL
+/////////////////////////////////////////////////////////////////////////////
 #ifndef _FPGEN_GENERATOR
 #define _FPGEN_GENERATOR
 
 #ifdef __clang__
 #include <experimental/coroutine>
-namespace std {
-using namespace experimental;
-}
 #else
 #include <coroutine>
 #endif
 
-#include "type_traits.hpp"
 #include <exception>
+#include <utility>
+#include "type_traits.hpp"
 
 /**
  *  \brief The namespace containing all of fpgen's code.
@@ -53,7 +58,11 @@ public:
     /**
      *  \brief Type alias for the suspend type (`std::suspend_always`).
      */
+#ifdef __clang__
+    using suspend_type = std::experimental::suspend_always;
+#else
     using suspend_type = std::suspend_always;
+#endif
 
     /**
      *  \brief The last value returned from the coroutine itself.
@@ -184,7 +193,7 @@ public:
      *  \param[in] is_finised Is this iterator finished?
      *  \param[in] value The value this iterator should hold.
      */
-    iterator_type(gen_t &source) : source{source} {}
+    explicit iterator_type(gen_t &source) : source{source} {}
 
     /**
      *  \brief Steps the generator to the next value.
@@ -192,7 +201,7 @@ public:
      */
     iter_t operator++() {
       source.next();
-      return {source};
+      return iter_t(source);
     }
 
     /**
@@ -228,7 +237,11 @@ public:
    *  \brief Type alias for the coroutine handle type
    * (`std::coroutine_handle<promise_type>`).
    */
+#ifdef __clang__
+  using handle_type = std::experimental::coroutine_handle<promise_type>;
+#else
   using handle_type = std::coroutine_handle<promise_type>;
+#endif
   /**
    *  \brief Type alias for the coroutine's return type (`T`).
    */

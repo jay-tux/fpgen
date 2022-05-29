@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: C/C++ CI (Clang)
 
 on:
   push:
@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: update
-      if: ${{ env.ACT }}
-      run: sudo apt -y update && sudo apt -y install python3 && sudo apt -y install cmake
+    - name: Update
+      # if: ${{ env.ACT }}
+      run: sudo apt -y update && sudo apt -y install python3 clang cmake
+    - name: Install libc++
+      run: sudo apt -y install libc++-14-dev libc++abi-14-dev
     - name: Install pip3
-      if: ${{ env.ACT }}
+      # if: ${{ env.ACT }}
       run: curl https://bootstrap.pypa.io/get-pip.py >get-pip.py && python3 get-pip.py
     - name: Install Conan
       id: conan
@@ -24,7 +26,7 @@ jobs:
     - name: Conan version
       run: echo "${{ steps.conan.outputs.version }}"
     - uses: actions/checkout@v2
-    - name: make test
-      run: make test
+    - name: make test (clang)
+      run: make test-clang
 
 # Note: the steps with `if: ${{ env.ACT }}` are for local setup only.

@@ -3,6 +3,7 @@ DEPS=$(SOURCES:$(SRCD)/%.cpp=$(OBJD)/%.d)
 TESTS=generator sources manip aggreg chain
 TESTOBJ=$(TESTS:%=$(OBJD)/test_%.o)
 
+CONAN_CC=
 CONAN_PKG_OVERRIDE=
 CONAN_MODIFY=$(CONAN_PKG_OVERRIDE:%=-s %:compiler.version=11.2)
 
@@ -26,7 +27,7 @@ $(OBJD)/%.o: $(SRCD)/%.cpp Makefile
 
 conan/conanbuildinfo.mak: conanfile.txt
 	@([ ! -d conan/ ] && mkdir -p conan/) || true
-	cd conan && CC=gcc CXX=$(CC) conan install .. $(CONAN_MODIFY)
+	cd conan && CC=$(CONAN_CC) CXX=$(CC) conan install .. $(CONAN_MODIFY) $(CONARGS)
 
 clean:
 	find ./bin/ -type f | grep -v '.gitkeep' | xargs rm -rf

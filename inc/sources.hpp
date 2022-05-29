@@ -1,11 +1,20 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        sources.hpp
+// Purpose:     functions to create fpgen generators from certain sources.
+// Author:      jay-tux
+// Copyright:   (c) 2022 jay-tux
+// Licence:     MPL
+/////////////////////////////////////////////////////////////////////////////
 #ifndef _FPGEN_SOURCES
 #define _FPGEN_SOURCES
 
-#include "generator.hpp"
-#include "type_traits.hpp"
 #include <istream>
 #include <iterator>
 #include <type_traits>
+#include <string>
+#include <tuple>
+#include "generator.hpp"
+#include "type_traits.hpp"
 
 /**
  *  \brief The namespace containing all of fpgen's code.
