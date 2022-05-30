@@ -13,5 +13,6 @@
 #include "manipulators.hpp"
 #include "sources.hpp"
 #include "type_traits.hpp"
+#include "stream.hpp"
 
 #endif

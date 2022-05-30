@@ -269,7 +269,7 @@ public:
   /**
    *  \brief Copy-assigning generators results in undefined behaviour.
    */
-  generator &operator=(const generator &other) = default;
+  generator &operator=(const generator &other) = delete;
   /**
    *  \brief Moves the data from the other generator into this one.
    *  \param[in,out] other The other generator.
