@@ -1,12 +1,11 @@
-#include "doctest/doctest.h"
-#include "generator.hpp"
-#include "manipulators.hpp"
-#include "sources.hpp"
-
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
+#include "doctest/doctest.h"
+#include "generator.hpp"
+#include "manipulators.hpp"
+#include "sources.hpp"
 
 fpgen::generator<size_t> manip_empty() { co_return; }
 
@@ -42,8 +41,8 @@ TEST_CASE("Map over a non-empty generator") {
   auto gen = manip();
   size_t i = 1;
   for (auto v : fpgen::map(gen, mapper)) {
-    CHECK(i * i == v);
-    CHECK(i <= 1024);
+    CHECK_EQ(i * i, v);
+    CHECK_LE(i, 1024);
     i *= 2;
   }
 }
@@ -85,8 +84,8 @@ TEST_CASE("Zip, both generators are non-empty") {
   for (auto v : fpgen::zip(gen, gen2)) {
     CHECK(std::get<0>(v) == i);
     CHECK(std::get<1>(v) == j);
-    CHECK(j <= 1024);
-    CHECK(i <= 10);
+    CHECK_LE(j, 1024);
+    CHECK_LE(i, 10);
 
     i++;
     j *= 2;
@@ -115,8 +114,8 @@ TEST_CASE("Filter a generator") {
   auto gen = until12();
   size_t i = 0;
   for (auto v : fpgen::filter(gen, is_even)) {
-    CHECK(v == i);
-    CHECK(i <= 12);
+    CHECK_EQ(v, i);
+    CHECK_LE(i, 12);
     i += 2;
   }
 }
@@ -132,11 +131,11 @@ TEST_CASE("Drop from a generator") {
   auto gen = drop(until12(), 5);
   size_t exp = 5;
   for (auto v : gen) {
-    CHECK(v == exp);
-    CHECK(exp <= 12);
+    CHECK_EQ(v, exp);
+    CHECK_LE(exp, 12);
     exp++;
   }
-  CHECK(exp == 13);
+  CHECK_EQ(exp, 13);
 }
 
 TEST_CASE("Take from an empty generator") {
@@ -151,10 +150,10 @@ TEST_CASE("Take from a generator") {
   size_t exp = 0;
   for (auto v : gen) {
     CHECK(v == exp);
-    CHECK(exp <= 8);
+    CHECK_LE(exp, 8);
     exp++;
   }
-  CHECK(exp == 8);
+  CHECK_EQ(exp, 8);
 }
 
 TEST_CASE("Drop & take from generator") {
@@ -180,11 +179,11 @@ TEST_CASE("Dropwhile over a generator") {
   auto gen = drop_while(until12(), [](size_t v) { return v < 5; });
   size_t exp = 5;
   for (auto v : gen) {
-    CHECK(v == exp);
-    CHECK(exp <= 12);
+    CHECK_EQ(v, exp);
+    CHECK_LE(exp, 12);
     exp++;
   }
-  CHECK(exp == 13);
+  CHECK_EQ(exp, 13);
 }
 
 TEST_CASE("Takewile over an empty generator") {
@@ -198,9 +197,9 @@ TEST_CASE("Takewhile over a generator") {
   auto gen = take_while(fpgen::inc((size_t)0), [](size_t v) { return v < 8; });
   size_t exp = 0;
   for (auto v : gen) {
-    CHECK(v == exp);
-    CHECK(exp <= 8);
+    CHECK_EQ(v, exp);
+    CHECK_LE(exp, 8);
     exp++;
   }
-  CHECK(exp == 8);
+  CHECK_EQ(exp, 8);
 }

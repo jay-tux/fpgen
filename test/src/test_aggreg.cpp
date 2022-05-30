@@ -1,12 +1,13 @@
+#include <map>
+#include <sstream>
+#include <vector>
+
 #include "aggregators.hpp"
 #include "doctest/doctest.h"
 #include "generator.hpp"
 #include "manipulators.hpp"
 #include "sources.hpp"
 
-#include <map>
-#include <sstream>
-#include <vector>
 
 fpgen::generator<size_t> a_empty() { co_return; }
 
@@ -48,7 +49,7 @@ size_t sum_ref(size_t &old, size_t in) {
 TEST_CASE("Aggregate empty generator") {
   auto gen = a_empty();
   std::vector<size_t> res;
-  CHECK(0 == fpgen::aggregate_to(gen, res).size());
+  CHECK_EQ(0, fpgen::aggregate_to(gen, res).size());
 }
 
 TEST_CASE("Aggregate to std::vector") {
@@ -56,17 +57,17 @@ TEST_CASE("Aggregate to std::vector") {
   std::vector<size_t> res;
   fpgen::aggregate_to(gen, res);
 
-  CHECK(0 == res[0]);
-  CHECK(1 == res[1]);
-  CHECK(1 == res[2]);
-  CHECK(2 == res[3]);
-  CHECK(3 == res[4]);
-  CHECK(5 == res[5]);
-  CHECK(8 == res[6]);
-  CHECK(13 == res[7]);
-  CHECK(21 == res[8]);
-  CHECK(34 == res[9]);
-  CHECK(res.size() == 10);
+  CHECK_EQ(0, res[0]);
+  CHECK_EQ(1, res[1]);
+  CHECK_EQ(1, res[2]);
+  CHECK_EQ(2, res[3]);
+  CHECK_EQ(3, res[4]);
+  CHECK_EQ(5, res[5]);
+  CHECK_EQ(8, res[6]);
+  CHECK_EQ(13, res[7]);
+  CHECK_EQ(21, res[8]);
+  CHECK_EQ(34, res[9]);
+  CHECK_EQ(res.size(), 10);
 }
 
 TEST_CASE("Aggregate: std::vector to generator to std::vector") {
@@ -83,31 +84,31 @@ TEST_CASE("Aggregate to std::map") {
   std::map<size_t, size_t> res;
   fpgen::tup_aggregate_to(gen, res);
 
-  CHECK(0 == res[0]);
-  CHECK(1 == res[1]);
-  CHECK(2 == res[2]);
-  CHECK(3 == res[3]);
-  CHECK(5 == res[5]);
-  CHECK(8 == res[8]);
-  CHECK(13 == res[13]);
-  CHECK(21 == res[21]);
-  CHECK(34 == res[34]);
-  CHECK(res.size() == 9);
+  CHECK_EQ(0, res[0]);
+  CHECK_EQ(1, res[1]);
+  CHECK_EQ(2, res[2]);
+  CHECK_EQ(3, res[3]);
+  CHECK_EQ(5, res[5]);
+  CHECK_EQ(8, res[8]);
+  CHECK_EQ(13, res[13]);
+  CHECK_EQ(21, res[21]);
+  CHECK_EQ(34, res[34]);
+  CHECK_EQ(res.size(), 9);
 }
 
 TEST_CASE("Count empty generator") {
   auto gen = a_empty();
-  CHECK(0 == fpgen::count(gen));
+  CHECK_EQ(0, fpgen::count(gen));
 }
 
 TEST_CASE("Count generator") {
   auto gen = values();
-  CHECK(10 == fpgen::count(gen));
+  CHECK_EQ(10, fpgen::count(gen));
 }
 
 TEST_CASE("Fold [using no-input, empty generator]") {
   auto gen = a_empty();
-  CHECK(0 == fpgen::fold<size_t>(gen, sum));
+  CHECK_EQ(0, fpgen::fold<size_t>(gen, sum));
 }
 
 TEST_CASE("Fold [using no-input, non-empty generator]") {
@@ -117,44 +118,43 @@ TEST_CASE("Fold [using no-input, non-empty generator]") {
 
 TEST_CASE("Fold [using input, empty generator]") {
   auto gen = a_empty();
-  CHECK(7 == fpgen::fold<size_t>(gen, sum, 7));
+  CHECK_EQ(7, fpgen::fold<size_t>(gen, sum, 7));
 }
 
 TEST_CASE("Fold [using input, non-empty generator]") {
   auto gen = values();
-  CHECK(calc_sum() + 7 == fpgen::fold<size_t>(gen, sum, 7));
+  CHECK_EQ(calc_sum() + 7, fpgen::fold<size_t>(gen, sum, 7));
 }
 
 TEST_CASE("Fold [using ref input, empty generator]") {
   auto gen = a_empty();
   size_t res = 7;
-  CHECK(7 == fpgen::fold_ref<size_t>(gen, sum, res));
-  CHECK(7 == res);
+  CHECK_EQ(7, fpgen::fold_ref<size_t>(gen, sum, res));
+  CHECK_EQ(7, res);
 }
 
 TEST_CASE("Fold [using ref input, non-epty generator]") {
   auto gen = values();
   size_t res = 7;
-  CHECK(calc_sum() + 7 == fpgen::fold_ref<size_t>(gen, sum, res));
-  CHECK(calc_sum() + 7 == res);
+  CHECK_EQ(calc_sum() + 7, fpgen::fold_ref<size_t>(gen, sum, res));
+  CHECK_EQ(calc_sum() + 7, res);
 }
 
 TEST_CASE("Sum empty generator") {
   auto gen = a_empty();
-  CHECK(0 == fpgen::sum(gen));
+  CHECK_EQ(0, fpgen::sum(gen));
 }
 
 TEST_CASE("Sum over generator") {
   auto gen = values();
-  CHECK(calc_sum() == fpgen::sum(gen));
+  CHECK_EQ(calc_sum(), fpgen::sum(gen));
 }
 
 TEST_CASE("Foreach over empty generator") {
   auto gen = a_empty();
-  // gen();
   size_t res = 0;
   fpgen::foreach (gen, [&res](size_t val) { res += val; });
-  CHECK(res == 0);
+  CHECK_EQ(res, 0);
 }
 
 TEST_CASE("Foreach over non-empty generator") {
@@ -162,7 +162,7 @@ TEST_CASE("Foreach over non-empty generator") {
   auto gen2 = values();
   size_t res = 0;
   fpgen::foreach (gen, [&res](size_t val) { res += val; });
-  CHECK(res == fpgen::sum(gen2));
+  CHECK_EQ(res, fpgen::sum(gen2));
 }
 
 TEST_CASE("Output to stream, no separator") {
@@ -170,7 +170,7 @@ TEST_CASE("Output to stream, no separator") {
   auto gen = fpgen::from(vals);
   std::stringstream strm;
   fpgen::to_stream(gen, strm);
-  CHECK(strm.str() == "123456");
+  CHECK_EQ(strm.str(), "123456");
 }
 
 TEST_CASE("Output to stream, with separator") {
@@ -178,7 +178,7 @@ TEST_CASE("Output to stream, with separator") {
   auto gen = fpgen::from(vals);
   std::stringstream strm;
   fpgen::to_stream(gen, strm, " ");
-  CHECK(strm.str() == "1 2 3 4 5 6 7");
+  CHECK_EQ(strm.str(), "1 2 3 4 5 6 7");
 }
 
 TEST_CASE("Output to stream (by lines), with trailing line") {
@@ -189,7 +189,7 @@ TEST_CASE("Output to stream (by lines), with trailing line") {
   for (auto v : vals)
     expect << v << std::endl;
   fpgen::to_lines(gen, strm);
-  CHECK(strm.str() == expect.str());
+  CHECK_EQ(strm.str(), expect.str());
 }
 
 TEST_CASE("Output to stream (by lines), without trailing line") {
@@ -199,5 +199,5 @@ TEST_CASE("Output to stream (by lines), without trailing line") {
   std::stringstream expect;
   expect << 1 << std::endl << 2 << std::endl << 3 << std::endl << 4;
   fpgen::to_lines_no_trail(gen, strm);
-  CHECK(strm.str() == expect.str());
+  CHECK_EQ(strm.str(), expect.str());
 }

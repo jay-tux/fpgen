@@ -1,13 +1,13 @@
-#include "doctest/doctest.h"
-#include "generator.hpp"
-#include "sources.hpp"
-
-#include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "doctest/doctest.h"
+#include "generator.hpp"
+#include "sources.hpp"
+
 
 TEST_CASE("Generator from std::vector") {
   std::vector<int> values = {0, 5, 1, 4, 2, 3};
@@ -97,8 +97,7 @@ TEST_CASE("Generator from std::istream") {
     bool genstate = gen;
     CHECK(genstate);
     auto tmp = gen();
-    CHECK(tmp == numbers[i]);
-    std::cout << i << "," << tmp << std::endl;
+    CHECK_EQ(tmp, numbers[i]);
   }
 
   bool genstate = gen;
@@ -141,13 +140,13 @@ Etiam vel porta augue. Maecenas volutpat odio in lacus sagittis fermentum.
   std::stringstream strm;
   strm << lipsum;
   auto gen = fpgen::from_lines(strm);
-  CHECK("" == gen());
+  CHECK_EQ("", gen());
   for (size_t i = 0; i < 10; i++) {
     bool gens = gen;
     CHECK(gens);
     CHECK(gen() == lines[i]);
   }
-  CHECK(gen() == "");
+  CHECK_EQ(gen(), "");
   bool gens = gen;
   CHECK(!gens);
 }
